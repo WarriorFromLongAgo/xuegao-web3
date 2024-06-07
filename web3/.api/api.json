@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "ava-cloud",
+      "source": "@ava-cloud/v1.0#4zvqw27lwgs25eb",
+      "integrity": "sha512-wsCqGiFdgMF2AczPUhPctsurqdxtfLRxJ77poRxnNE+RhzpUc+qPEQPidAlNJZbPvchY74Y2N7TdnQ+4FcJeRw==",
+      "installerVersion": "6.1.1"
+    }
+  ]
+}

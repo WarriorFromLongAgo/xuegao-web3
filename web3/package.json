@@ -4,16 +4,19 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.4",
-    "typescript": "^5.4.5",
     "@noble/hashes": "1.4.0",
     "@noble/secp256k1": "2.1.0",
     "@scure/base": "1.1.6",
-    "micro-eth-signer": "0.7.2"
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "micro-eth-signer": "0.7.2",
+    "ts-jest": "^29.1.4",
+    "typescript": "^5.4.5"
   },
   "scripts": {
     "test": "jest"
+  },
+  "dependencies": {
+    "@api/ava-cloud": "file:.api/apis/ava-cloud"
   }
 }
