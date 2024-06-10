@@ -135,5 +135,8 @@ yarn esbuild src/browser.ts --bundle --outfile=dist/esbuild/browser.js
 
 
 
+yarn add tslib jest ts-jest @types/jest --dev
+
+
 
 
