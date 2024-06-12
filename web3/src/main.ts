@@ -6,7 +6,7 @@ import {TransactionRequest} from "@ethersproject/abstract-provider";
 /**
  * HD 钱包生成地址
  * */
-export default function createEthAddress(seedHex: string, addressIndex: string) {
+export function createEthAddress(seedHex: string, addressIndex: string) {
     let seedHexToBuffer: Buffer = Buffer.from(seedHex, 'hex')
 
     const hdNode = ethers.utils.HDNode.fromSeed(seedHexToBuffer);
@@ -22,6 +22,14 @@ export default function createEthAddress(seedHex: string, addressIndex: string) 
         publicKey,
         address
     });
+}
+
+/**
+ * 交易所 钱包生成地址
+ * */
+export function createEthAddressByCex() {
+
+
 }
 
 /**
@@ -75,18 +83,31 @@ const SUPPORT_CHAIN_NETWORK = {
 
 
 export class EthTransactionSigner {
+    // 用于存储以太坊账户的私钥，用于对交易进行签名。
     privateKey: string = '';
+    // 交易的序列号，用于确保每笔交易的唯一性，防止重放攻击。
     nonce: number = 0;
+    // 发送交易的以太坊账户地址。
     from: string = '';
+    // 接收交易的以太坊账户地址。
     to: string = '';
+    // 交易的最大 gas 用量，用于限制交易的执行成本。
     gasLimit: number = 0;
+    // 每单位 gas 的价格，决定了交易的手续费总额。
     gasPrice: number = 0;
+    // 交易的金额，以字符串形式表示，通常是以太币数量。
     amount: string = '';
-    data: any[] = [];
+    // 可选的附加数据，用于发送与合约相关的交易。
+    data?: any[];
+    // 以太坊网络的链 ID，用于指定交易所在的网络。
     chainId: number = 0;
+    // 代币的小数位数，用于计算代币的真实价值。
     decimal: number = 0;
-    maxFeePerGas: number = 0;
-    maxPriorityFeePerGas: number = 0;
+    // 可选的最大 gas 交易费用，用于 EIP-1559 规范中的交易费用设置。
+    maxFeePerGas?: number;
+    // 可选的最大优先 gas 交易费用，用于 EIP-1559 规范中的交易费用设置。
+    maxPriorityFeePerGas?: number;
+    // 如果交易是代币转账，则指定代币的合约地址。
     tokenAddress: string = '';
 }
 

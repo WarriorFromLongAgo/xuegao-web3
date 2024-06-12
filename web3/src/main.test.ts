@@ -1,4 +1,4 @@
-import createEthAddress, {importEthAddress, verifyEthAddress} from "./main";
+import {createEthAddress, createEthAddressByCex, importEthAddress, signEthTransaction, verifyEthAddress} from "./main";
 import {mnemonicToSeed} from "./bip";
 
 test('hd createAddress', () => {
@@ -19,6 +19,13 @@ test('hd createAddress', () => {
     console.log("account = ", account)
 });
 
+test('交易所 createAddress', () => {
+    const account = createEthAddressByCex()
+    console.log("account = ", account)
+    // 以上是交易所内部流程，下面开始给用户地址
+
+
+});
 
 test('HD importEthAddress', () => {
     const account = importEthAddress("70772a61218ca415cb69e06d2e42f81a258f681e2e51f155147412bacf941798")
@@ -38,6 +45,24 @@ test('HD verifyEthAddress', () => {
     console.log("0x5f487ca29914b5A92Da91aaC16a4d5E35604b7C1 = ", verifyEthAddress("0x5f487ca29914b5A92Da91aaC16a4d5E35604b7C1"))
 });
 
+
+test('HD signEthTransaction', async () => {
+    const rawHex = await signEthTransaction(
+        {
+            "privateKey": "privateKey",
+            "nonce": 0,
+            "from": "0x2cF83cfD2CaB4fd3681Cf5673955b0494bE2955C",
+            "to": "0x72fFaA289993bcaDa2E01612995E5c75dD81cdBC",
+            "gasLimit": 21000,
+            "amount": "0.0001",
+            "gasPrice": 5795062165,
+            "decimal": 18,
+            "chainId": 10,
+            "tokenAddress": "0x00"
+        }
+    )
+    console.log(rawHex)
+});
 
 
 
