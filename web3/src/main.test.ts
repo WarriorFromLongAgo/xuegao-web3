@@ -10,7 +10,7 @@ test('hd createAddress', () => {
     const seed: Buffer = mnemonicToSeed(params_1)
     // f5d9a3d12c62309945855ad96653ada491dadc14159711196de592202d6fd86f2d2471680670d726689596898fee222993fd96ec2ce47a1578df3fdc4c800cba
     console.log("seed = ", seed.toString("hex"));
-    const account = createEthAddress(seed.toString("hex"), "2")
+    const account = createEthAddress(seed.toString("hex"), "0")
     // {
     //     "privateKey": "0x70772a61218ca415cb69e06d2e42f81a258f681e2e51f155147412bacf941798",
     //     "publicKey": "0x022d9da3aad70c3b53192ae2bc3c131afa6c0d598d038227049123f1ab6abb868b",
@@ -61,6 +61,18 @@ test('HD signEthTransaction', async () => {
             "tokenAddress": "0x00"
         }
     )
+    // const rawHexV2 = await signEthTransaction({
+    //     "privateKey": "701ce13dd40a83862b19447ab75553592c122f48e459d99846a424e0b8790732",
+    //     "nonce": 3,
+    //     "from": "0x17b448c6920ACECB87D4a2659008d3401f88Dde6",
+    //     "to": "0x72fFaA289993bcaDa2E01612995E5c75dD81cdBC",
+    //     "gasLimit": 91000,
+    //     "amount": "0.9",
+    //     "gasPrice": 2721906,
+    //     "decimal": 6,
+    //     "chainId": 10,
+    //     "tokenAddress": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58"
+    // })
     console.log(rawHex)
 });
 
