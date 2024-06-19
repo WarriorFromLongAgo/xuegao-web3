@@ -1,5 +1,13 @@
 import {mnemonicToSeed} from "./bip";
-import {createBtcAddress, importBtcAddress, signBtcTransaction, SignObj, ValidNetwork, verifyBtcAddress} from "./main";
+import {
+    CreateAddressParams,
+    createBtcAddress, createBtcAddressV2,
+    importBtcAddress,
+    signBtcTransaction,
+    SignObj,
+    ValidNetwork,
+    verifyBtcAddress
+} from "./main";
 
 test('btc createAddress', () => {
     const mnemonic = "lounge face pattern cinnamon shrug average spend rapid field cheese wrist weather";
@@ -8,13 +16,33 @@ test('btc createAddress', () => {
         password: ""
     }
     const seed = mnemonicToSeed(params_1)
-    const account = createBtcAddress(seed.toString("hex"), "0", "0", "bitcoin")
+    const account =
+        createBtcAddress(seed.toString("hex"), "0", "0", "bitcoin")
     console.log(account)
     // {
     //     privateKey: '67fe93913d415ebb15cf6d86cc913efb0b3d724caa743de442cb795481495429',
     //     publicKey: '02ef67f85c8376cf609a494af8c3a043df98211dec573cf1b0eb17304439cab90d',
     //     address: '1CzkhKbqwmDL4o8StBdttLNesLpDZpddmA'
     // }
+});
+
+test('btc createBtcAddressV2', () => {
+    const mnemonic = "lounge face pattern cinnamon shrug average spend rapid field cheese wrist weather";
+    const params_1 = {
+        mnemonic: mnemonic,
+        password: ""
+    }
+    const seed = mnemonicToSeed(params_1)
+
+    const param: CreateAddressParams = {
+        seedHex: seed.toString("hex"),
+        receiveOrChange: "0",
+        addressIndex: "0",
+        network: "bitcoin",
+        method: "p2pkh"
+    }
+    const account = createBtcAddressV2(param)
+    console.log(account)
 });
 
 test('importBtcAddress', () => {
