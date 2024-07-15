@@ -3,7 +3,7 @@ import {createTonAddress, SignTransaction} from "./main";
 
 
 test('create address', async () => {
-    const mnemonic = "champion junior glimpse analyst plug jump entire barrel slight swim hidden remove";
+    const mnemonic = "absurd junior glimpse analyst plug jump account barrel slight swim hidden remove";
 
     // 这里添加了密码参数
     const seed = bip39.mnemonicToSeedSync(mnemonic, "")
