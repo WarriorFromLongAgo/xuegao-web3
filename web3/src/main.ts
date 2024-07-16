@@ -1,12 +1,23 @@
+import {derivePath, getPublicKey} from "ed25519-hd-key";
 
-// 定义一个方法来计算两个数字的和
-function addNumbers(a: number, b: number): number {
-    return a + b;
+export function createAddress(seedHex: string, addressIndex: string) {
+    const {key} = derivePath("m/44'/626'/0'/" + addressIndex + "'", seedHex);
+
+    const pubKey = getPublicKey(key, false).toString("hex");
+
+    return {
+        privateKey: key.toString("hex") + pubKey,
+        publicKey: pubKey,
+        address: "k:" + pubKey,
+    }
 }
 
-export default addNumbers;
+export function pubKeyToAddress(pubKey: string): string {
+    return "k:" + pubKey
+}
 
-
-
+// export function signKdaTransaction(params: any): string {
+//
+// }
 
 
