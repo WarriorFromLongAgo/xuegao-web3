@@ -13,7 +13,12 @@
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.3",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "pact-lang-api": "^4.3.6",
+    "bignumber.js": "9.0.0",
+    "bip32": "3.0.1",
+    "bip39": "^3.0.4",
+    "ed25519-hd-key": "^1.2.0"
   },
   "scripts": {
     "cli": "ts-node src/cli.ts",
@@ -22,5 +27,7 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist build",
     "ts-node": "ts-node"
+  },
+  "dependencies": {
   }
 }

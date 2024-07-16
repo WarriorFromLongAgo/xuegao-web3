@@ -1,14 +1,17 @@
-import addNumbers from "./main";
+import {createAddress} from "./main";
+import {mnemonicToSeedSync} from "bip39";
 
 
-test('the data is peanut butter', () => {
-    expect(1).toBe(1)
+test('create kda address', () => {
+    const mnemonic = 'raw cherry park music seed credit rather model wrap human demand trade'
+    let seed = mnemonicToSeedSync(mnemonic);
+    const account = createAddress(seed.toString("hex"), "0")
+    console.log(account)
 });
 
-test('add', () => {
-    let number = addNumbers(1,2);
-    console.log("add ", number)
-});
+// 如何找到 kda 用的是什么方式，生成的地址
+
+
 
 
 
