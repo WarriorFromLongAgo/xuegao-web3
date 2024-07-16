@@ -1,0 +1,16 @@
+[package]
+name = "crypto"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aes-gcm = "0.10.3"
+sha3 = "0.11.0-pre.1"
+hex = "0.4.3"
+blake2 = "0.10.6"
+base16ct = { version = "0.2.0", features = ["alloc"] }
+k256 = "0.13.3"
+ed25519 = "2.2.3"
+ed25519-dalek = "2.1.1"
+rsa = "0.9.6"
+rand = "0.8.5"
