@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+actix-web = "4.8.0"
+tokio = "1.38.0"
+time = "0.3.36"
+actix-rt = "2.10.0"
+reqwest = "0.12.5"
+
