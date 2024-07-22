@@ -5,9 +5,11 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4.8.0"
+actix-http = "3.8.0"
 tokio = { version = "1.38.0", features = ["full"] }
 time = "0.3.36"
 actix-rt = "2.10.0"
 reqwest = { version = "0.12.5", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+derive_more = "0.99.18"
