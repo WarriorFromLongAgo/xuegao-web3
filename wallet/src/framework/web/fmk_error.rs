@@ -1,30 +1,74 @@
-use actix_web::{error, http::{header::ContentType, StatusCode}, HttpResponse};
-use derive_more::{Display, Error};
+use std::backtrace::Backtrace;
 
-#[derive(Debug, Display, Error)]
+use actix_web::{error, http::StatusCode, HttpResponse};
+use derive_more::Display;
+use serde::Serialize;
+
+use crate::framework::web::fmk_result::R;
+
+#[derive(Debug, Display, Serialize)]
 pub enum FmkErrorEnum {
-    #[display(fmt = "internal error")]
-    InternalError,
-    #[display(fmt = "bad request")]
-    BadClientData,
-    #[display(fmt = "timeout")]
-    Timeout,
-    #[display(fmt = "vaildation error on filed:{}", filed)]
-    ValidationError { filed: String },
+    #[display(fmt = "validate error on field: {}", field)]
+    ValidationError { field: String },
+    #[display(fmt = "数据库处理异常")]
+    DBError(String),
+    #[allow(dead_code)]
+    #[display(fmt = "服务器异常")]
+    ServerError(String),
 }
+
+#[derive(Debug, Serialize)]
+pub struct FmkErrorResponse {
+    error_message: String,
+
+    backtrace: String,
+}
+
+impl FmkErrorEnum {
+    fn error_response(&self) -> FmkErrorResponse {
+        let backtrace = Backtrace::capture();
+        let error_message = match self {
+            FmkErrorEnum::ValidationError { field } => {
+                println!("Validation Error {:?}", field);
+                format!("Validation Error {}", field)
+            }
+            FmkErrorEnum::DBError(msg) => {
+                println!("DBError Error {:?}", msg);
+                msg.clone()
+            }
+            FmkErrorEnum::ServerError(msg) => {
+                println!("Server Error {:?}", msg);
+                msg.clone()
+            }
+        };
+        eprintln!("error_message backtrace {:#}", backtrace);
+        FmkErrorResponse {
+            error_message,
+            backtrace: "".to_string(),
+        }
+    }
+}
+
 
 impl error::ResponseError for FmkErrorEnum {
     fn status_code(&self) -> StatusCode {
-        match *self {
-            FmkErrorEnum::InternalError => StatusCode::INTERNAL_SERVER_ERROR,
-            FmkErrorEnum::BadClientData => StatusCode::BAD_REQUEST,
-            FmkErrorEnum::Timeout => StatusCode::GATEWAY_TIMEOUT,
-            FmkErrorEnum::ValidationError { .. } => StatusCode::BAD_REQUEST
+        match self {
+            FmkErrorEnum::ValidationError { field } => {
+                println!("ValidationError Error: {:?}", field);
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
+            FmkErrorEnum::ServerError(msg) | FmkErrorEnum::DBError(msg) => {
+                println!("Server Error: {:?}", msg);
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
         }
     }
-    fn error_response(&self) -> actix_web::HttpResponse<actix_web::body::BoxBody> {
-        HttpResponse::build(self.status_code())
-            .insert_header(ContentType::html())
-            .body(self.to_string())
+
+    fn error_response(&self) -> HttpResponse {
+        let error_response = self.error_response();
+        eprintln!("error_response: {:?}", error_response.error_message);
+        // eprintln!("error_response.backtrace: {:#}", error_response.backtrace);
+
+        return R::<()>::err_msg(self.error_response().error_message);
     }
 }

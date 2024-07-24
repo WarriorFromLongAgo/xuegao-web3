@@ -1,5 +1,5 @@
 use actix_web::{HttpResponse, post, Responder};
-
+use log::info;
 use crate::business::chain_scan;
 use crate::framework::web::fmk_error::FmkErrorEnum;
 use crate::framework::web::fmk_result::R;
@@ -13,7 +13,8 @@ pub async fn throw_err() -> impl Responder {
 
 #[post("/throw_fmk_error")]
 pub async fn throw_fmk_error() -> Result<&'static str, FmkErrorEnum> {
-    Err(FmkErrorEnum::BadClientData)
+    let str = "dadadad".to_string();
+    Err(FmkErrorEnum::ServerError(str))
 }
 
 #[post("/normal")]
@@ -26,22 +27,13 @@ pub async fn return_json() -> impl Responder {
     return R::success("dasdadada");
 }
 
-// 不允许
-// #[post("/responder_result_str")]
-// pub async fn responder_result_str()-> Result<String> {
-//     return  Ok("result");
-// }
-
-// curl http://localhost:8088/responder/str
-// pub async fn responder_str() -> &'static str {
-//     "responder_str"
-// }
-
-// curl http://localhost:8088/responder/string
-// pub async fn responder_string() -> String {
-//     "responder_string".to_owned()
-// }
-
+#[post("/log_info")]
+pub async fn log_info() -> impl Responder {
+    info!("dadadadadadadadadaasda");
+    info!("122222222222222222222222222222");
+    info!("33333333333333333333333333");
+    return R::success("dasdadada");
+}
 
 #[post("/chain_scan_service")]
 pub async fn chain_scan_service() -> impl Responder {
