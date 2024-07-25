@@ -1,4 +1,5 @@
 use std::env;
+
 use actix_web::{App, dev::Service as _, HttpServer, middleware};
 use actix_web::middleware::DefaultHeaders;
 use actix_web::web;
@@ -70,12 +71,14 @@ async fn main() -> std::io::Result<()> {
         app = app.service(business::service::chain_scan::responder_impl_responder);
         app = app.service(business::service::chain_scan::return_json);
         app = app.service(business::service::chain_scan::log_info);
+        app = app.service(business::api::api_controller::health);
+        app = app.service(business::api::api_controller::deposits_list);
+        app = app.service(business::api::api_controller::withdrawals_list);
+        app = app.service(business::api::api_controller::withdrawals_submit);
         // app = app.service(business::service::chain_scan::responder_str);
         // app = app.service(business::service::chain_scan::responder_string);
 
         business::config::db::DATABASE_URL;
-
-
 
 
         return app;
