@@ -75,7 +75,7 @@ impl Deposit {
         Ok(deposit)
     }
 
-    pub fn list(pool: &PgPool) -> Result<Vec<Deposit>, sqlx::Error> {
+    pub async fn list(pool: &PgPool) -> Result<Vec<Deposit>, sqlx::Error> {
         // 执行查询并自动映射到 Deposit 结构体
         let deposits = sqlx::query_as(
             r#"
@@ -83,7 +83,8 @@ impl Deposit {
         FROM deposits
         "#
         )
-            .fetch_all(pool)?;
+            .fetch_all(pool)
+            .await?;
         Ok(deposits)
     }
 

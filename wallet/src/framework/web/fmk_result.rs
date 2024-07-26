@@ -21,12 +21,12 @@ where
     pub fn success(data: T) -> HttpResponse {
         let r: R<T> = R {
             code: StatusCode::OK.as_u16() as i32,
-            msg: "服务器异常".to_string(),
+            msg: "请求成功".to_string(),
             data: Some(data),
         };
         HttpResponse::build(StatusCode::OK)
             .insert_header(ContentType::json())
-            .body(serde_json::to_string(&r).unwrap())
+            .json(r)
     }
 
     // 创建失败的响应
@@ -38,7 +38,7 @@ where
         };
         HttpResponse::build(StatusCode::OK)
             .insert_header(ContentType::json())
-            .body(serde_json::to_string(&r).unwrap())
+            .json(r)
     }
 
     // 创建失败的响应
@@ -50,7 +50,7 @@ where
         };
         HttpResponse::build(StatusCode::OK)
             .insert_header(ContentType::json())
-            .body(serde_json::to_string(&r).unwrap())
+            .json(r)
     }
 
     // 创建自定义状态码的响应
@@ -62,7 +62,7 @@ where
         };
         HttpResponse::build(StatusCode::OK)
             .insert_header(ContentType::json())
-            .body(serde_json::to_string(&r).unwrap())
+            .json(r)
     }
 }
 
