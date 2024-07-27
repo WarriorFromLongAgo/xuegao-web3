@@ -1,4 +1,4 @@
-pub mod chain_scan;
+pub mod chain_service;
 pub mod config;
 pub mod service;
 pub mod model;

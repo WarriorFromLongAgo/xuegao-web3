@@ -9,9 +9,8 @@ const ETH_JSON_RPC_URL: &str = "https://mainnet.optimism.io";
 #[tokio::test]
 async fn test() {
 
-    let resp = get_block_by_hash();
-    println!("get_block_by_hash {:?}", resp)
-
+    let resp = get_block_by_hash().await;
+    println!("get_block_by_hash {:?}", resp);
 }
 
 pub async fn get_block_by_hash() -> String {

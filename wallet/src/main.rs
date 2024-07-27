@@ -1,9 +1,10 @@
-use std::env;
+use std::{env, io};
 
 use actix_web::{App, dev::Service as _, HttpServer, middleware};
 use actix_web::middleware::DefaultHeaders;
 use actix_web::web;
 use log::info;
+use sqlx::postgres::PgPoolOptions;
 
 use crate::framework::util::time_util;
 
@@ -47,8 +48,18 @@ fn init_logger() {
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     init_logger();
-    HttpServer::new(|| {
+
+    let pool = PgPoolOptions::new()
+        .max_connections(10)
+        .connect(business::config::db::DATABASE_URL)
+        .await
+        .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?; // 转换错误
+    eprintln!("链接数据库成功");
+
+    HttpServer::new(move || {
         let mut app = App::new();
+
+        app = app.app_data(web::Data::new(pool.clone()));
 
         // app = app.wrap_fn(|req, srv| {
         //     println!("Hi from start. You requested: {}", req.path());
@@ -65,21 +76,18 @@ async fn main() -> std::io::Result<()> {
 
         // app = app.wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"));
 
-        app = app.route("/health", web::get().to(|| async { "Hello, world!" }));
-        app = app.service(business::service::chain_scan::throw_err);
-        app = app.service(business::service::chain_scan::throw_fmk_error);
-        app = app.service(business::service::chain_scan::responder_impl_responder);
-        app = app.service(business::service::chain_scan::return_json);
-        app = app.service(business::service::chain_scan::log_info);
+        // app = app.route("/health", web::get().to(|| async { "Hello, world!" }));
+        // app = app.service(business::service::chain_service::throw_err);
+        // app = app.service(business::service::chain_service::throw_fmk_error);
+        // app = app.service(business::service::chain_service::responder_impl_responder);
+        // app = app.service(business::service::chain_service::return_json);
+        // app = app.service(business::service::chain_service::log_info);
+
         app = app.service(business::api::api_controller::health);
         app = app.service(business::api::api_controller::deposits_list);
+
         app = app.service(business::api::api_controller::withdrawals_list);
         app = app.service(business::api::api_controller::withdrawals_submit);
-        // app = app.service(business::service::chain_scan::responder_str);
-        // app = app.service(business::service::chain_scan::responder_string);
-
-        business::config::db::DATABASE_URL;
-
 
         return app;
     })

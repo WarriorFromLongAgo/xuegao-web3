@@ -1,6 +1,6 @@
 use actix_web::{HttpResponse, post, Responder};
 use log::info;
-use crate::business::chain_scan;
+use crate::business::chain_service;
 use crate::framework::web::fmk_error::FmkErrorEnum;
 use crate::framework::web::fmk_result::R;
 
@@ -37,7 +37,7 @@ pub async fn log_info() -> impl Responder {
 
 #[post("/chain_scan_service")]
 pub async fn chain_scan_service() -> impl Responder {
-    let block = chain_scan::eth_scan::get_block_by_hash().await;
+    let block = chain_service::eth_call_service::get_block_by_hash().await;
 
     // 将 Person 实例序列化为 JSON 字符串
     let json_string = serde_json::to_string(&block).unwrap();

@@ -1,7 +1,8 @@
 use actix_web::{get, post, Responder, web};
 use sqlx::PgPool;
 
-use crate::business::model::r#do::deposit::Deposit;
+use crate::business::model::doo::deposit::Deposit;
+use crate::business::model::doo::withdraw::Withdraw;
 use crate::framework::web::fmk_result::R;
 
 #[get("/health")]
@@ -9,7 +10,8 @@ async fn health() -> impl Responder {
     R::success("")
 }
 
-#[post("/api/v1/deposits/list")]
+
+#[post("/api/v1/deposits/list_v2")]
 async fn deposits_list(pool: web::Data<PgPool>) -> impl Responder {
     let list = Deposit::list(&pool).await;
     match list {
@@ -23,9 +25,34 @@ async fn deposits_list(pool: web::Data<PgPool>) -> impl Responder {
     }
 }
 
+#[post("/api/v1/deposits/list")]
+async fn deposits_list_v2(pool: web::Data<PgPool>) -> impl Responder {
+    let list = Deposit::list(&pool).await;
+    eprintln!("list {:?}", list);
+    match list {
+        Ok(list) => R::success(list),
+        Err(e) => {
+            // 处理错误，例如返回一个包含错误信息的响应
+            // HttpResponse::InternalServerError().body(format!("Error: {:?}", e))
+            return R::<String>::err_msg("Failed to fetch deposits".to_string());
+        }
+    }
+}
+
+
+
 #[post("/api/v1/withdrawals/list")]
 async fn withdrawals_list(pool: web::Data<PgPool>) -> impl Responder {
-    return R::success("withdrawals_list");
+    let list = Withdraw::list(&pool).await;
+    eprintln!("list {:?}", list);
+    match list {
+        Ok(list) => R::success(list),
+        Err(e) => {
+            // 处理错误，例如返回一个包含错误信息的响应
+            // HttpResponse::InternalServerError().body(format!("Error: {:?}", e))
+            return R::<String>::err_msg("Failed to fetch deposits".to_string());
+        }
+    }
 }
 
 #[post("/api/v1/withdrawals/submit")]
