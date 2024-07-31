@@ -1,7 +1,8 @@
-use crate::business::model::chain::address_info::AddressInfo;
-use crate::business::model::enums::address_type_enum::AddressType;
-
-
+use crate::business::chain_service::eth_sign_service::create_address;
+use crate::business::model::doo::address_do::AddressDo;
+use crate::business::model::enums::address_type_enum::AddressTypeEnum;
+use crate::business::model::enums::coin_type_enum::CoinTypeEnum;
+use crate::framework::util::time_chrono_util;
 
 /// 创建一个批量的以太坊地址。
 ///
@@ -32,26 +33,31 @@ use crate::business::model::enums::address_type_enum::AddressType;
 ///     println!("Chain ID: {}", address.chain_id);
 /// }
 /// ```
-pub fn create_batch_addresses(count: usize, address_type: AddressType, chain_id: u64) -> Vec<AddressInfo> {
-    let mut addresses = Vec::with_capacity(count);
+pub fn create_batch_addresses(count: usize, address_type: AddressTypeEnum, coin_type: CoinTypeEnum) {
+    let mut addresses_vec = Vec::with_capacity(count);
 
     for _ in 0..count {
-        if ()
-
-
-        let address_info = create_address(chain_id);
-        // 根据 address_type 进行处理
-        match address_type {
-            AddressType::Standard => {
-                // 这里可以加入标准地址类型的处理逻辑
-                addresses.push(address_info);
-            },
-            AddressType::OtherType => {
-                // 这里可以加入其他地址类型的处理逻辑
-                addresses.push(address_info);
-            },
+        if (CoinTypeEnum::Ether == coin_type) {
+            let address_info = create_address();
+            addresses_vec.push(address_info);
         }
     }
 
-    addresses
+    let mut add_do_vec = Vec::with_capacity(count);
+    let mut balance_do_vec = Vec::with_capacity(count);
+
+    for tempAddInfo in addresses_vec {
+        let address_do = AddressDo {
+            guid: None,
+            user_uid: "user_uid".to_string(),
+            address: tempAddInfo.address,
+            address_type: address_type.english().to_string(),
+            private_key: tempAddInfo.private_key,
+            public_key: tempAddInfo.public_key,
+            timestamp: time_chrono_util::now_time(),
+        };
+        add_do_vec.push(address_do);
+
+
+    }
 }

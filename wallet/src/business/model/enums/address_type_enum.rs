@@ -1,30 +1,29 @@
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AddressType {
+pub enum AddressTypeEnum {
     HotWallet,
     ColdWallet,
-    AggregationWallet,
+    CollectionWallet,
     UserAddress,
 }
 
-impl AddressType {
+impl AddressTypeEnum {
     // 获取地址类型的描述
-    pub fn description(&self) -> &'static str {
+    pub fn chinese(&self) -> &'static str {
         match self {
-            AddressType::HotWallet => "热钱包地址",
-            AddressType::ColdWallet => "冷钱包地址",
-            AddressType::AggregationWallet => "归集钱包地址",
-            AddressType::UserAddress => "用户地址",
+            AddressTypeEnum::HotWallet => "热钱包地址",
+            AddressTypeEnum::ColdWallet => "冷钱包地址",
+            AddressTypeEnum::CollectionWallet => "归集钱包地址",
+            AddressTypeEnum::UserAddress => "用户地址",
         }
     }
 
     // 获取地址类型的名称
-    pub fn name(&self) -> &'static str {
+    pub fn english(&self) -> &'static str {
         match self {
-            AddressType::HotWallet => "HotWallet",
-            AddressType::ColdWallet => "ColdWallet",
-            AddressType::AggregationWallet => "AggregationWallet",
-            AddressType::UserAddress => "UserAddress",
+            AddressTypeEnum::HotWallet => "HotWallet",
+            AddressTypeEnum::ColdWallet => "ColdWallet",
+            AddressTypeEnum::CollectionWallet => "AggregationWallet",
+            AddressTypeEnum::UserAddress => "UserAddress",
         }
     }
 
@@ -51,13 +50,13 @@ impl AddressType {
 }
 #[cfg(test)]
 mod tests {
-    use crate::business::model::enums::address_type_enum::AddressType;
+    use crate::business::model::enums::address_type_enum::AddressTypeEnum;
 
     #[test]
     fn test_address_type_from_string() {
-        let address_type = AddressType::HotWallet;
+        let address_type = AddressTypeEnum::HotWallet;
         println!("Address Type: {:?}", address_type);
-        println!("Name: {}", address_type.name());
-        println!("Description: {}", address_type.description());
+        println!("Name: {}", address_type.english());
+        println!("Description: {}", address_type.chinese());
     }
 }

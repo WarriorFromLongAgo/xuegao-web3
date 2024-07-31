@@ -8,45 +8,47 @@
 
 /// 定义区块链网络及其链 ID。
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ChainId {
+pub enum CoinTypeEnum {
     Ether,
+    EtherClassic,
     Solana,
     Sui,
-    OptimisticEthereum,
+    Optimistic,
 }
 
-impl ChainId {
+impl CoinTypeEnum {
     /// 获取符号。
-    pub fn coin_type(&self) -> &'static str {
+    /// 获取 `coin_type`。
+    pub fn coin_type(&self) -> u32 {
         match self {
-            Self::Bitcoin => "BTC",
-            Self::Testnet => "Testnet",
-            Self::Litecoin => "LTC",
-            Self::Dogecoin => "DOGE",
+            Self::Ether => 60,
+            Self::EtherClassic => 61,
+            Self::Solana => 501,
+            Self::Sui => 784,
+            Self::Optimistic => 614,
         }
     }
 
-    /// 根据 path_component 获取 CoinType 枚举变体。
-    pub fn from_path_component(path_component: u32) -> Option<Self> {
-        match path_component {
-            0x80000000 => Some(Self::Bitcoin),
-            0x80000001 => Some(Self::Testnet),
-            0x80000002 => Some(Self::Litecoin),
-            0x80000003 => Some(Self::Dogecoin),
+    /// 根据 `coin_type` 获取枚举变体。
+    pub fn from_coin_type(coin_type: u32) -> Option<Self> {
+        match coin_type {
+            60 => Some(Self::Ether),
+            61 => Some(Self::EtherClassic),
+            501 => Some(Self::Solana),
+            784 => Some(Self::Sui),
+            614 => Some(Self::Optimistic),
             _ => None,
         }
     }
 
-
     /// 获取符号。
     pub fn symbol(&self) -> &'static str {
         match self {
-            Self::Bitcoin => "BTC",
-            Self::Testnet => "Testnet",
-            Self::Litecoin => "LTC",
-            Self::Dogecoin => "DOGE",
+            Self::Ether => "ETH",
+            Self::EtherClassic => "ETC",
+            Self::Solana => "SOL",
+            Self::Sui => "SUI",
+            Self::Optimistic => "OPT",
         }
     }
-
-
 }

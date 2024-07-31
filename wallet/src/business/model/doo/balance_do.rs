@@ -1,30 +1,40 @@
+use chrono::NaiveDateTime;
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
-pub struct Balance {
-    pub guid: i32,
+pub struct BalanceDo {
+    /// 可选的唯一标识符
+    pub guid: Option<i32>,
+    /// 地址字符串
     pub address: String,
-    pub address_type: i16,
+    /// 地址类型，引用自 [`AddressType`](address_type_enum::AddressType)
+    /// 归集地址 热钱包 冷钱包 用户地址
+    pub address_type: String,
+    /// 代币地址
     pub token_address: String,
-    pub balance: f64,
-    pub lock_balance: f64,
-    pub timestamp: i64,
+    /// 当前余额
+    pub balance: Decimal,
+    /// 锁定余额
+    pub lock_balance: Decimal,
+    /// 时间戳
+    pub timestamp: NaiveDateTime,
 }
 
 
-impl Balance {
+impl BalanceDo {
     // 创建 Balance
-    pub async fn insert(&self, pool: &PgPool) -> Result<Balance, sqlx::Error> {
+    pub async fn insert(&self, pool: &PgPool) -> Result<BalanceDo, sqlx::Error> {
         let query = r#"
             INSERT INTO balances (address, address_type, token_address, balance, lock_balance, timestamp)
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING guid, address, address_type, token_address, balance, lock_balance, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Balance>(query)
+        let result = sqlx::query_as::<_, BalanceDo>(query)
             .bind(&self.address)
-            .bind(self.address_type)
+            .bind(&self.address_type)
             .bind(&self.token_address)
             .bind(self.balance)
             .bind(self.lock_balance)
@@ -36,13 +46,13 @@ impl Balance {
     }
 
     // 读取 Balance
-    pub async fn get(pool: &PgPool, guid: i32) -> Result<Option<Balance>, sqlx::Error> {
+    pub async fn get(pool: &PgPool, guid: i32) -> Result<Option<BalanceDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, address, address_type, token_address, balance, lock_balance, timestamp
             FROM balances WHERE guid = $1
         "#;
 
-        let result = sqlx::query_as::<_, Balance>(query)
+        let result = sqlx::query_as::<_, BalanceDo>(query)
             .bind(guid)
             .fetch_optional(pool)
             .await?;
@@ -51,7 +61,7 @@ impl Balance {
     }
 
     // 更新 Balance
-    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<Balance>, sqlx::Error> {
+    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<BalanceDo>, sqlx::Error> {
         let query = r#"
             UPDATE balances
             SET address = $1,
@@ -64,9 +74,9 @@ impl Balance {
             RETURNING guid, address, address_type, token_address, balance, lock_balance, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Balance>(query)
+        let result = sqlx::query_as::<_, BalanceDo>(query)
             .bind(&self.address)
-            .bind(self.address_type)
+            .bind(&self.address_type)
             .bind(&self.token_address)
             .bind(self.balance)
             .bind(self.lock_balance)
@@ -93,13 +103,13 @@ impl Balance {
     }
 
     // 列表 Balances
-    pub async fn list(pool: &PgPool) -> Result<Vec<Balance>, sqlx::Error> {
+    pub async fn list(pool: &PgPool) -> Result<Vec<BalanceDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, address, address_type, token_address, balance, lock_balance, timestamp
             FROM balances
         "#;
 
-        let result = sqlx::query_as::<_, Balance>(query)
+        let result = sqlx::query_as::<_, BalanceDo>(query)
             .fetch_all(pool)
             .await?;
 

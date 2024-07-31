@@ -1,33 +1,48 @@
+use chrono::NaiveDateTime;
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
-pub struct Transaction {
-    pub guid: i32,
+pub struct TransactionDo {
+    /// 可选的唯一标识符
+    pub guid: Option<i32>,
+    /// 区块哈希值
     pub block_hash: String,
+    /// 区块编号
     pub block_number: i64,
+    /// 交易哈希值
     pub hash: String,
+    /// 发起地址
     pub from_address: String,
+    /// 目标地址
     pub to_address: String,
+    /// 代币地址
     pub token_address: String,
-    pub fee: f64,
-    pub amount: f64,
+    /// 手续费
+    pub fee: Decimal,
+    /// 交易金额
+    pub amount: Decimal,
+    /// 交易状态
     pub status: i16,
+    /// 交易索引
     pub transaction_index: i64,
+    /// 交易类型
     pub tx_type: i16,
-    pub timestamp: i64,
+    /// 时间戳
+    pub timestamp: NaiveDateTime,
 }
 
-impl Transaction {
+impl TransactionDo {
     // 创建 Transaction
-    pub async fn insert(&self, pool: &PgPool) -> Result<Transaction, sqlx::Error> {
+    pub async fn insert(&self, pool: &PgPool) -> Result<TransactionDo, sqlx::Error> {
         let query = r#"
             INSERT INTO transactions (block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, tx_type, timestamp)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
             RETURNING guid, block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, tx_type, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Transaction>(query)
+        let result = sqlx::query_as::<_, TransactionDo>(query)
             .bind(&self.block_hash)
             .bind(self.block_number)
             .bind(&self.hash)
@@ -47,13 +62,13 @@ impl Transaction {
     }
 
     // 读取 Transaction
-    pub async fn get(pool: &PgPool, guid: i32) -> Result<Option<Transaction>, sqlx::Error> {
+    pub async fn get(pool: &PgPool, guid: i32) -> Result<Option<TransactionDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, tx_type, timestamp
             FROM transactions WHERE guid = $1
         "#;
 
-        let result = sqlx::query_as::<_, Transaction>(query)
+        let result = sqlx::query_as::<_, TransactionDo>(query)
             .bind(guid)
             .fetch_optional(pool)
             .await?;
@@ -62,7 +77,7 @@ impl Transaction {
     }
 
     // 更新 Transaction
-    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<Transaction>, sqlx::Error> {
+    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<TransactionDo>, sqlx::Error> {
         let query = r#"
             UPDATE transactions
             SET block_hash = $1,
@@ -81,7 +96,7 @@ impl Transaction {
             RETURNING guid, block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, tx_type, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Transaction>(query)
+        let result = sqlx::query_as::<_, TransactionDo>(query)
             .bind(&self.block_hash)
             .bind(self.block_number)
             .bind(&self.hash)
@@ -116,13 +131,13 @@ impl Transaction {
     }
 
     // 列表 Transactions
-    pub async fn list(pool: &PgPool) -> Result<Vec<Transaction>, sqlx::Error> {
+    pub async fn list(pool: &PgPool) -> Result<Vec<TransactionDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, tx_type, timestamp
             FROM transactions
         "#;
 
-        let result = sqlx::query_as::<_, Transaction>(query)
+        let result = sqlx::query_as::<_, TransactionDo>(query)
             .fetch_all(pool)
             .await?;
 

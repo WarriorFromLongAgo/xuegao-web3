@@ -1,33 +1,43 @@
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
+use sqlx::types::chrono::NaiveDateTime;
+use crate::business::model::enums::address_type_enum::AddressTypeEnum;
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
-pub struct Address {
-    pub guid: i32,
+pub struct AddressDo {
+    /// 可选的唯一标识符
+    pub guid: Option<i32>,
+    /// 用户的唯一标识符 默认是user_id，然后修改时进行赋值
     pub user_uid: String,
+    /// 地址字符串
     pub address: String,
-    pub address_type: i16,
+    /// 地址类型，引用自 `address_type_enum.rs`
+    /// 归集地址 热钱包 冷钱包 用户地址
+    pub address_type: String,
+    /// 私钥字符串
     pub private_key: String,
+    /// 公钥字符串
     pub public_key: String,
-    pub timestamp: i64,
+    /// 时间戳
+    pub timestamp: NaiveDateTime,
 }
 
-impl Address {
+impl AddressDo {
     // 创建 Address
-    pub async fn insert(&self, pool: &PgPool) -> Result<Address, sqlx::Error> {
+    pub async fn insert(&self, pool: &PgPool) -> Result<AddressDo, sqlx::Error> {
         let query = r#"
             INSERT INTO addresses (user_uid, address, address_type, private_key, public_key, timestamp)
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING guid, user_uid, address, address_type, private_key, public_key, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Address>(query)
+        let result = sqlx::query_as::<_, AddressDo>(query)
             .bind(&self.user_uid)
             .bind(&self.address)
-            .bind(self.address_type)
+            .bind(&self.address_type)
             .bind(&self.private_key)
             .bind(&self.public_key)
-            .bind(self.timestamp)
+            .bind(&self.timestamp)
             .fetch_one(pool)
             .await?;
 
@@ -35,13 +45,13 @@ impl Address {
     }
 
     // 读取 Address
-    pub async fn get(pool: &PgPool, guid: i32) -> Result<Option<Address>, sqlx::Error> {
+    pub async fn get(pool: &PgPool, guid: i32) -> Result<Option<AddressDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, user_uid, address, address_type, private_key, public_key, timestamp
             FROM addresses WHERE guid = $1
         "#;
 
-        let result = sqlx::query_as::<_, Address>(query)
+        let result = sqlx::query_as::<_, AddressDo>(query)
             .bind(guid)
             .fetch_optional(pool)
             .await?;
@@ -50,7 +60,7 @@ impl Address {
     }
 
     // 更新 Address
-    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<Address>, sqlx::Error> {
+    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<AddressDo>, sqlx::Error> {
         let query = r#"
             UPDATE addresses
             SET user_uid = $1,
@@ -63,13 +73,13 @@ impl Address {
             RETURNING guid, user_uid, address, address_type, private_key, public_key, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Address>(query)
+        let result = sqlx::query_as::<_, AddressDo>(query)
             .bind(&self.user_uid)
             .bind(&self.address)
-            .bind(self.address_type)
+            .bind(&self.address_type)
             .bind(&self.private_key)
             .bind(&self.public_key)
-            .bind(self.timestamp)
+            .bind(&self.timestamp)
             .bind(guid)
             .fetch_optional(pool)
             .await?;
@@ -92,13 +102,13 @@ impl Address {
     }
 
     // 列表 Addresses
-    pub async fn list(pool: &PgPool) -> Result<Vec<Address>, sqlx::Error> {
+    pub async fn list(pool: &PgPool) -> Result<Vec<AddressDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, user_uid, address, address_type, private_key, public_key, timestamp
             FROM addresses
         "#;
 
-        let result = sqlx::query_as::<_, Address>(query)
+        let result = sqlx::query_as::<_, AddressDo>(query)
             .fetch_all(pool)
             .await?;
 

@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use crate::business::chain_service::eth_sign_service::{create_address, AddressInfo};
+    use crate::business::chain_service::eth_sign_service::{create_address};
+    use crate::business::model::chain::address_info::AddressInfo;
 
     #[test]
     fn test_create_address() {

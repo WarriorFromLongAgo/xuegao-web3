@@ -1,33 +1,46 @@
+use chrono::NaiveDateTime;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
-pub struct Deposit {
-    pub guid: i32,                 // 唯一标识符
-    pub block_hash: String,       // 区块哈希值
-    pub block_number: Decimal, // 区块编号
-    pub hash: String,             // 交易哈希值
-    pub from_address: String,     // 发起地址
-    pub to_address: String,       // 目标地址
-    pub token_address: String,    // 代币地址
-    pub fee: Decimal,          // 手续费
-    pub amount: Decimal,       // 交易金额
-    pub status: i16,              // 交易状态
-    pub transaction_index: Decimal, // 交易索引
-    pub timestamp: i32,           // 时间戳
+pub struct DepositDo {
+    /// 唯一标识符
+    pub guid: Option<i32>,
+    /// 区块哈希值
+    pub block_hash: String,
+    /// 区块编号
+    pub block_number: Decimal,
+    /// 交易哈希值
+    pub hash: String,
+    /// 发起地址
+    pub from_address: String,
+    /// 目标地址
+    pub to_address: String,
+    /// 代币地址
+    pub token_address: String,
+    /// 手续费
+    pub fee: Decimal,
+    /// 交易金额
+    pub amount: Decimal,
+    /// 交易状态
+    pub status: i16,
+    /// 交易索引
+    pub transaction_index: Decimal,
+    /// 时间戳
+    pub timestamp: NaiveDateTime,
 }
 
-impl Deposit {
+impl DepositDo {
     // 插入新的 Deposit 对象到数据库
-    pub async fn insert(&self, pool: &PgPool) -> Result<Deposit, sqlx::Error> {
+    pub async fn insert(&self, pool: &PgPool) -> Result<DepositDo, sqlx::Error> {
         let query = r#"
             INSERT INTO deposits (block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, timestamp)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             RETURNING guid, block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Deposit>(query)
+        let result = sqlx::query_as::<_, DepositDo>(query)
             .bind(&self.block_hash)
             .bind(self.block_number)
             .bind(&self.hash)
@@ -47,13 +60,13 @@ impl Deposit {
 
 
     // 通过 guid 查询 Deposit 对象
-    pub async fn get_by_guid(pool: &PgPool, guid: i32) -> Result<Option<Deposit>, sqlx::Error> {
+    pub async fn get_by_guid(pool: &PgPool, guid: i32) -> Result<Option<DepositDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, timestamp
             FROM deposits WHERE guid = $1
         "#;
 
-        let result = sqlx::query_as::<_, Deposit>(query)
+        let result = sqlx::query_as::<_, DepositDo>(query)
             .bind(guid)
             .fetch_optional(pool)
             .await?;
@@ -62,13 +75,13 @@ impl Deposit {
     }
 
     // 列表 Deposits
-    pub async fn list(pool: &PgPool) -> Result<Vec<Deposit>, sqlx::Error> {
+    pub async fn list(pool: &PgPool) -> Result<Vec<DepositDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, timestamp
             FROM deposits
         "#;
 
-        let result = sqlx::query_as::<_, Deposit>(query)
+        let result = sqlx::query_as::<_, DepositDo>(query)
             .fetch_all(pool)
             .await?;
 
@@ -76,7 +89,7 @@ impl Deposit {
     }
 
     // 更新当前 Deposit 对象
-    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<Deposit>, sqlx::Error> {
+    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<DepositDo>, sqlx::Error> {
         let query = r#"
             UPDATE deposits
             SET block_hash = $1,
@@ -94,7 +107,7 @@ impl Deposit {
             RETURNING guid, block_hash, block_number, hash, from_address, to_address, token_address, fee, amount, status, transaction_index, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Deposit>(query)
+        let result = sqlx::query_as::<_, DepositDo>(query)
             .bind(&self.block_hash)
             .bind(self.block_number)
             .bind(&self.hash)

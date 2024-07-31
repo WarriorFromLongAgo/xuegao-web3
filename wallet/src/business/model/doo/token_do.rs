@@ -1,26 +1,34 @@
+use chrono::NaiveDateTime;
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
-pub struct Token {
-    pub guid: i32,
+pub struct TokenDo {
+    /// 可选的唯一标识符
+    pub guid: Option<i32>,
+    /// 代币地址
     pub token_address: String,
+    /// 代币的小数位数
     pub decimal: i16,
+    /// 代币名称
     pub token_name: String,
-    pub collect_amount: f64,
-    pub timestamp: i64,
+    /// 收集的金额
+    pub collect_amount: Decimal,
+    /// 时间戳
+    pub timestamp: NaiveDateTime,
 }
 
-impl Token {
+impl TokenDo {
     // 创建 Token
-    pub async fn create(&self, pool: &PgPool) -> Result<Token, sqlx::Error> {
+    pub async fn create(&self, pool: &PgPool) -> Result<TokenDo, sqlx::Error> {
         let query = r#"
             INSERT INTO tokens (token_address, decimal, token_name, collect_amount, timestamp)
             VALUES ($1, $2, $3, $4, $5)
             RETURNING guid, token_address, decimal, token_name, collect_amount, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Token>(query)
+        let result = sqlx::query_as::<_, TokenDo>(query)
             .bind(&self.token_address)
             .bind(self.decimal)
             .bind(&self.token_name)
@@ -33,13 +41,13 @@ impl Token {
     }
 
     // 读取 Token
-    pub async fn get(pool: &PgPool, guid: i32) -> Result<Option<Token>, sqlx::Error> {
+    pub async fn get(pool: &PgPool, guid: i32) -> Result<Option<TokenDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, token_address, decimal, token_name, collect_amount, timestamp
             FROM tokens WHERE guid = $1
         "#;
 
-        let result = sqlx::query_as::<_, Token>(query)
+        let result = sqlx::query_as::<_, TokenDo>(query)
             .bind(guid)
             .fetch_optional(pool)
             .await?;
@@ -48,7 +56,7 @@ impl Token {
     }
 
     // 更新 Token
-    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<Token>, sqlx::Error> {
+    pub async fn update(&self, pool: &PgPool, guid: i32) -> Result<Option<TokenDo>, sqlx::Error> {
         let query = r#"
             UPDATE tokens
             SET token_address = $1,
@@ -60,7 +68,7 @@ impl Token {
             RETURNING guid, token_address, decimal, token_name, collect_amount, timestamp
         "#;
 
-        let result = sqlx::query_as::<_, Token>(query)
+        let result = sqlx::query_as::<_, TokenDo>(query)
             .bind(&self.token_address)
             .bind(self.decimal)
             .bind(&self.token_name)
@@ -88,13 +96,13 @@ impl Token {
     }
 
     // 列表 Tokens
-    pub async fn list(pool: &PgPool) -> Result<Vec<Token>, sqlx::Error> {
+    pub async fn list(pool: &PgPool) -> Result<Vec<TokenDo>, sqlx::Error> {
         let query = r#"
             SELECT guid, token_address, decimal, token_name, collect_amount, timestamp
             FROM tokens
         "#;
 
-        let result = sqlx::query_as::<_, Token>(query)
+        let result = sqlx::query_as::<_, TokenDo>(query)
             .fetch_all(pool)
             .await?;
 

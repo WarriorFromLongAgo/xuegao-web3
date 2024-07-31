@@ -1,8 +1,8 @@
 use actix_web::{get, post, Responder, web};
 use sqlx::PgPool;
 
-use crate::business::model::doo::deposit::Deposit;
-use crate::business::model::doo::withdraw::Withdraw;
+use crate::business::model::doo::deposit_do::DepositDo;
+use crate::business::model::doo::withdraw_do::WithdrawDo;
 use crate::framework::web::fmk_result::R;
 
 #[get("/health")]
@@ -13,7 +13,7 @@ async fn health() -> impl Responder {
 
 #[post("/api/v1/deposits/list_v2")]
 async fn deposits_list(pool: web::Data<PgPool>) -> impl Responder {
-    let list = Deposit::list(&pool).await;
+    let list = DepositDo::list(&pool).await;
     match list {
         Ok(list) => R::success(list),
         Err(e) => {
@@ -27,7 +27,7 @@ async fn deposits_list(pool: web::Data<PgPool>) -> impl Responder {
 
 #[post("/api/v1/deposits/list")]
 async fn deposits_list_v2(pool: web::Data<PgPool>) -> impl Responder {
-    let list = Deposit::list(&pool).await;
+    let list = DepositDo::list(&pool).await;
     eprintln!("list {:?}", list);
     match list {
         Ok(list) => R::success(list),
@@ -43,7 +43,7 @@ async fn deposits_list_v2(pool: web::Data<PgPool>) -> impl Responder {
 
 #[post("/api/v1/withdrawals/list")]
 async fn withdrawals_list(pool: web::Data<PgPool>) -> impl Responder {
-    let list = Withdraw::list(&pool).await;
+    let list = WithdrawDo::list(&pool).await;
     eprintln!("list {:?}", list);
     match list {
         Ok(list) => R::success(list),
