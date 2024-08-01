@@ -8,7 +8,7 @@ use serde_json::{json, Value};
 pub struct HttpUtil;
 
 impl HttpUtil {
-    pub async fn send_json_rpc_v2(url: &str, method: &str, params: Vec<&str>) -> Result<Value, Error> {
+    pub async fn send_json_rpc(url: &str, method: &str, params: Vec<Value>) -> Result<Value, Error> {
         // 构造 JSON-RPC 请求体
         let request_body = json!({
             "jsonrpc": "2.0",
@@ -17,7 +17,7 @@ impl HttpUtil {
             "id": 1 // 请求的唯一标识，可以自定义
         });
 
-        eprintln!("send_post_request url {}, json_data {:?}, params {:?}", url, method, params);
+        eprintln!("send_post_request url {}, method {:?}, params {:?}", url, method, params);
 
         let client = Client::new();
         let response = client
@@ -39,6 +39,7 @@ impl HttpUtil {
             let response_json: Value = response.json().await.map_err(|e| {
                 actix_web::error::ErrorInternalServerError(format!("Failed to parse response JSON: {:?}", e))
             })?;
+            eprintln!("send_json_rpc_v2 response_json: {:?}", response_json);
             Ok(response_json)
         } else {
             // 处理错误情况

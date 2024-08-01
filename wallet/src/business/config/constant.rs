@@ -16,7 +16,7 @@ mod block {
     const DEFAULT_BLOCKS_STEP: u16 = 500;
 
     // 空地址
-    const ZERO_ADDRESS: &str = "0x00";
+    // const ZERO_ADDRESS: &str = "0x00";
 }
 
 

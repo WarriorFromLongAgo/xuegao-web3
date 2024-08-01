@@ -3,6 +3,12 @@ name = "wallet"
 version = "0.1.0"
 edition = "2021"
 
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 3
+
 [dependencies]
 actix-web = "4.8.0"
 actix-http = "3.8.0"
@@ -21,4 +27,4 @@ ethers = "2.0.14"
 rand = "0.8.5"
 hex = "0.4.3"
 
-
+#wallet = { path = "." } # 替换为你的项目名

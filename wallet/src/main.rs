@@ -1,11 +1,14 @@
 use std::{env, io};
 
+use actix_http::body::MessageBody;
 use actix_web::{App, dev::Service as _, HttpServer, middleware};
 use actix_web::middleware::DefaultHeaders;
 use actix_web::web;
 use log::info;
 use sqlx::postgres::PgPoolOptions;
 
+use crate::business::chain_service;
+use crate::business::service::chain_scan_service::chain_scan_service;
 use crate::framework::util::time_util;
 
 mod business;
@@ -53,8 +56,11 @@ async fn main() -> std::io::Result<()> {
         .max_connections(10)
         .connect(business::config::db::DATABASE_URL)
         .await
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?; // 转换错误
+        .expect("Failed to create pool.");
     eprintln!("链接数据库成功");
+
+    chain_service::create_address_service::create_batch_addresses_test(&pool).await;
+    eprintln!("保存数据成功");
 
     HttpServer::new(move || {
         let mut app = App::new();

@@ -1,4 +1,5 @@
 use actix_web::{HttpResponse, post, Responder};
+use actix_web::web::block;
 use log::info;
 use crate::business::chain_service;
 use crate::framework::web::fmk_error::FmkErrorEnum;
@@ -37,12 +38,7 @@ pub async fn log_info() -> impl Responder {
 
 #[post("/chain_scan_service")]
 pub async fn chain_scan_service() -> impl Responder {
-    let block = chain_service::eth_call_service::get_block_by_hash().await;
-
-    // 将 Person 实例序列化为 JSON 字符串
-    let json_string = serde_json::to_string(&block).unwrap();
-    println!("chain_scan_service JSON: {}", json_string);
-
-    return HttpResponse::Ok().json("fsfssfsfds");
+    // let block = chain_service::eth_call_service::get_block_by_hash().await;
+    return R::success("");
 }
 
