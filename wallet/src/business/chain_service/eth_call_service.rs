@@ -4,6 +4,8 @@ use actix_web::Error;
 use serde_json::Value;
 
 use crate::business::model::chain::eth::eth_block_number::EthBlockNumber;
+use crate::business::model::chain::eth::eth_gas_price::EthGasPrice;
+use crate::business::model::chain::eth::eth_max_priority_fee_per_gas::EthMaxPriorityFeePerGas;
 use crate::business::model::enums::block_status_enum::BlockStatusEnum;
 use crate::framework::util::req_util;
 
@@ -47,6 +49,75 @@ pub async fn latest_block_number() -> EthBlockNumber {
     }
 }
 
+pub async fn get_gas_price() -> EthGasPrice {
+    let params = Vec::new();
+    let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_gasPrice", params).await;
+
+
+    match resp {
+        Ok(response) => {
+            let response_string = response.to_string();
+            eprintln!("get_gas_price response_string {}", response_string);
+
+            // 提取 result 字段
+            let result_str = match response.get("result").and_then(Value::as_str) {
+                Some(hex_str) => hex_str,
+                None => panic!("Invalid response format, 'result' field not found or not a string"),
+            };
+            eprintln!("get_gas_price response_string result {}", result_str);
+
+            // 去掉前缀 "0x" 并转换为十进制
+            let hex_str = &result_str[2..];
+            let decimal_value = u64::from_str_radix(hex_str, 16)
+                .expect("Failed to convert hex to decimal"); // 使用 expect 替代 unwrap，提供错误信息
+            eprintln!("get_gas_price {}", decimal_value);
+
+            EthGasPrice {
+                gas_price_hex: result_str.to_string(),
+                gas_price_dec: decimal_value.to_string(),
+            }
+        }
+        Err(err) => {
+            eprintln!("Failed to fetch block: {}", err);
+            panic!("Failed to fetch block");
+        }
+    }
+}
+
+pub async fn get_max_priority_fee_per_gas() -> EthMaxPriorityFeePerGas {
+    let params = Vec::new();
+    let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_maxPriorityFeePerGas", params).await;
+
+    match resp {
+        Ok(response) => {
+            let response_string = response.to_string();
+            eprintln!("get_max_priority_fee_per_gas response_string {}", response_string);
+
+            // 提取 result 字段
+            let result_str = match response.get("result").and_then(Value::as_str) {
+                Some(hex_str) => hex_str,
+                None => panic!("Invalid response format, 'result' field not found or not a string"),
+            };
+            eprintln!("get_max_priority_fee_per_gas response_string result {}", result_str);
+
+            // 去掉前缀 "0x" 并转换为十进制
+            let hex_str = &result_str[2..];
+            let decimal_value = u64::from_str_radix(hex_str, 16)
+                .expect("Failed to convert hex to decimal"); // 使用 expect 替代 unwrap，提供错误信息
+            eprintln!("get_max_priority_fee_per_gas {}", decimal_value);
+
+            EthMaxPriorityFeePerGas {
+                max_priority_fee_per_gas_hex: result_str.to_string(),
+                max_priority_fee_per_gas_dec: decimal_value.to_string(),
+            }
+        }
+        Err(err) => {
+            eprintln!("Failed to fetch block: {}", err);
+            panic!("Failed to fetch block");
+        }
+    }
+}
+
 pub async fn get_block_by_block_number(block_status_enum: BlockStatusEnum) -> Option<String> {
     let mut params = Vec::new();
     params.push(Value::String(block_status_enum.english()));
@@ -73,6 +144,9 @@ pub async fn get_block_by_block_hash(block_hash_option: Option<String>) -> Optio
         return None;
     }
     let block_hash = block_hash_option.unwrap();
+    if (block_hash.trim().is_empty()) {
+        return None;
+    }
 
     let mut params = Vec::new();
     params.push(Value::String(block_hash));
@@ -91,4 +165,93 @@ pub async fn get_block_by_block_hash(block_hash_option: Option<String>) -> Optio
         }
     }
 }
+
+/// 根据交易哈希返回交易信息
+/// 注意：这个接口返回的数据，和 get_block_by_block_hash 设置true返回的数据，一模一样
+pub async fn get_tx_by_tx_hash(tx_hash: String) -> Option<String> {
+    if (tx_hash.trim().is_empty()) {
+        return None;
+    }
+
+    let mut params = Vec::new();
+    params.push(Value::String(tx_hash));
+    let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_getTransactionByHash", params).await;
+
+    // 根据返回结果返回合适的值
+    match resp {
+        Ok(response) => {
+            let response_string = response.to_string();
+            return Some(response_string);
+        }
+        Err(err) => {
+            // 直接抛出异常
+            panic!("Failed to fetch block: {}", err);
+        }
+    }
+}
+
+/// 根据交易哈希返回交易信息
+/// 注意：这个接口返回的数据，和 get_block_by_block_hash 设置true返回的数据，一模一样
+pub async fn get_tx_receipt_by_tx_hash(tx_hash: String) -> Option<String> {
+    if (tx_hash.trim().is_empty()) {
+        return None;
+    }
+
+    let mut params = Vec::new();
+    params.push(Value::String(tx_hash));
+    let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_getTransactionReceipt", params).await;
+
+    // 根据返回结果返回合适的值
+    match resp {
+        Ok(response) => {
+            let response_string = response.to_string();
+            return Some(response_string);
+        }
+        Err(err) => {
+            // 直接抛出异常
+            panic!("Failed to fetch block: {}", err);
+        }
+    }
+}
+
+pub async fn get_tx_count_by_address(tx_hash: String,
+                                     block_status_enum: BlockStatusEnum) -> Option<String> {
+    let mut params = Vec::new();
+    params.push(Value::String(tx_hash));
+    params.push(Value::String(block_status_enum.english()));
+    let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_getTransactionCount", params).await;
+
+    // 根据返回结果返回合适的值
+    match resp {
+        Ok(response) => {
+            let response_string = response.to_string();
+            return Some(response_string);
+        }
+        Err(err) => {
+            // 直接抛出异常
+            panic!("Failed to fetch block: {}", err);
+        }
+    }
+}
+
+
+pub async fn eth_send_raw_transaction(block_status_enum: BlockStatusEnum) -> Option<String> {
+    let mut params = Vec::new();
+    params.push(Value::String(block_status_enum.english()));
+    params.push(Value::Bool(true));
+    let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_sendRawTransaction", params).await;
+
+    // 根据返回结果返回合适的值
+    match resp {
+        Ok(response) => {
+            let response_string = response.to_string();
+            return Some(response_string);
+        }
+        Err(err) => {
+            // 直接抛出异常
+            panic!("Failed to fetch block: {}", err);
+        }
+    }
+}
+
 

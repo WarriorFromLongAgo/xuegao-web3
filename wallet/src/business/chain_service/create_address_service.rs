@@ -93,7 +93,7 @@ pub async fn create_batch_addresses(pool: &PgPool, count: usize, address_type: A
             }
             Err(err) => {
                 // 处理插入错误
-                eprintln!("Failed to insert address: {}", err);
+                panic!("Failed temp_address_do: {}", err);
             }
         }
     }
@@ -107,7 +107,7 @@ pub async fn create_batch_addresses(pool: &PgPool, count: usize, address_type: A
             }
             Err(err) => {
                 // 处理插入错误
-                eprintln!("Failed to insert address: {}", err);
+                panic!("Failed temp_balance_do: {}", err);
             }
         }
     }

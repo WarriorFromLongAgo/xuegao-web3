@@ -7,7 +7,7 @@ use actix_web::web;
 use log::info;
 use sqlx::postgres::PgPoolOptions;
 
-use crate::business::chain_service;
+use crate::business::{chain_service, job};
 use crate::business::service::chain_scan_service::chain_scan_service;
 use crate::framework::util::time_util;
 
@@ -61,6 +61,9 @@ async fn main() -> std::io::Result<()> {
 
     chain_service::create_address_service::create_batch_addresses_test(&pool).await;
     eprintln!("保存数据成功");
+
+    // 启动定时任务
+    tokio::spawn(business::job::deposit_job::deposit_job());
 
     HttpServer::new(move || {
         let mut app = App::new();
