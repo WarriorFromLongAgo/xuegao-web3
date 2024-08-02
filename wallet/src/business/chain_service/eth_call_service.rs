@@ -4,6 +4,7 @@ use actix_web::Error;
 use serde_json::Value;
 
 use crate::business::model::chain::eth::eth_block_number::EthBlockNumber;
+use crate::business::model::enums::block_status_enum::BlockStatusEnum;
 use crate::framework::util::req_util;
 
 const ETH_JSON_RPC_URL: &str = "https://go.getblock.io/b54672ce0d524fd9b9aca108594d11b4";
@@ -46,17 +47,11 @@ pub async fn latest_block_number() -> EthBlockNumber {
     }
 }
 
-pub async fn get_block_by_block_number(block_number_hex: Option<String>) -> Option<_> {
-    if (block_number_hex.is_none()) {
-        return None;
-    }
-
-
-    // 构建 JSON-RPC 请求参数
+pub async fn get_block_by_block_number(block_status_enum: BlockStatusEnum) -> Option<String> {
     let mut params = Vec::new();
-    params.push(Value::String(input));
+    params.push(Value::String(block_status_enum.english()));
     params.push(Value::Bool(true));
-    let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_getBlockByHash", params).await;
+    let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_getBlockByNumber", params).await;
 
     // 根据返回结果返回合适的值
     match resp {
@@ -73,12 +68,14 @@ pub async fn get_block_by_block_number(block_number_hex: Option<String>) -> Opti
 
 
 /// 根据区块hash，获取区块信息
-pub async fn get_block_by_block_hash(block_hash: Option<String>) -> Option<String> {
-    let input = block_hash?;
+pub async fn get_block_by_block_hash(block_hash_option: Option<String>) -> Option<String> {
+    if (block_hash_option.is_none()) {
+        return None;
+    }
+    let block_hash = block_hash_option.unwrap();
 
-    // 构建 JSON-RPC 请求参数
     let mut params = Vec::new();
-    params.push(Value::String(input));
+    params.push(Value::String(block_hash));
     params.push(Value::Bool(true));
     let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_getBlockByHash", params).await;
 
