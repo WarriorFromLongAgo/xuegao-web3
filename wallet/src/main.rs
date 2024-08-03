@@ -6,14 +6,12 @@ use actix_web::middleware::DefaultHeaders;
 use actix_web::web;
 use log::info;
 use sqlx::postgres::PgPoolOptions;
-
+use xuegao_fmk::util::time_util;
 use crate::business::{chain_service, job};
 use crate::business::service::chain_scan_service::chain_scan_service;
-use crate::framework::util::time_util;
 
 mod business;
-mod framework;
-
+mod config;
 
 fn init_logger() {
     use std::io::Write;
@@ -58,6 +56,7 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to create pool.");
     eprintln!("链接数据库成功");
+
 
     chain_service::create_address_service::create_batch_addresses_test(&pool).await;
     eprintln!("保存数据成功");

@@ -27,4 +27,4 @@ ethers = "2.0.14"
 rand = "0.8.5"
 hex = "0.4.3"
 
-#wallet = { path = "." } # 替换为你的项目名
+xuegao_fmk = {path = "../xuegao_fmk" }

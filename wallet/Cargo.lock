@@ -4773,6 +4773,7 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tokio",
+ "xuegao_fmk",
 ]
 
 [[package]]
@@ -5131,6 +5132,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "05f360fc0b24296329c78fda852a1e9ae82de9cf7b27dae4b7f62f118f77b9ed"
 dependencies = [
  "tap",
+]
+
+[[package]]
+name = "xuegao_fmk"
+version = "0.1.0"
+dependencies = [
+ "actix-http",
+ "actix-web",
+ "chrono",
+ "derive_more",
+ "reqwest 0.12.5",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
