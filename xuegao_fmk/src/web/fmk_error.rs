@@ -1,18 +1,19 @@
 use std::backtrace::Backtrace;
+use std::fmt;
 
 use actix_web::{error, http::StatusCode, HttpResponse};
-use derive_more::Display;
 use serde::Serialize;
+
 use crate::web::fmk_result::FmkR;
 
-#[derive(Debug, Display, Serialize)]
+#[derive(Debug, Serialize)]
 pub enum FmkErrorEnum {
-    #[display(fmt = "validate error on field: {}", field)]
+    // #[display(fmt = "validate error on field: {}", field)]
     ValidationError { field: String },
-    #[display(fmt = "数据库处理异常")]
+    // #[display(fmt = "数据库处理异常")]
     DBError(String),
     #[allow(dead_code)]
-    #[display(fmt = "服务器异常")]
+    // #[display(fmt = "服务器异常")]
     ServerError(String),
 }
 
@@ -21,6 +22,16 @@ pub struct FmkErrorResponse {
     error_message: String,
 
     backtrace: String,
+}
+
+impl fmt::Display for FmkErrorEnum {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            FmkErrorEnum::ValidationError { field } => write!(f, "Validation error on field: {}", field),
+            FmkErrorEnum::DBError(msg) => write!(f, "Database error: {}", msg),
+            FmkErrorEnum::ServerError(msg) => write!(f, "Server error: {}", msg),
+        }
+    }
 }
 
 impl FmkErrorEnum {

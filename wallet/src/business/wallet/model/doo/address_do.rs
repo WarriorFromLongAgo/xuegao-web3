@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use sqlx::types::chrono::NaiveDateTime;
@@ -112,5 +114,23 @@ impl AddressDo {
             .await?;
 
         Ok(result)
+    }
+
+    // 列表 Addresses
+    pub async fn list_address(pool: &PgPool, address_type: &str) -> Result<HashSet<String>, sqlx::Error> {
+        let query = r#"
+            SELECT distinct address FROM addresses where address_type = $1 order by address
+        "#;
+
+        // 执行查询并获取所有结果
+        let result: Vec<String> = sqlx::query_scalar(query)
+            .bind(address_type)
+            .fetch_all(pool)
+            .await?;
+
+        // 将结果转换为 HashSet
+        let address_set: HashSet<String> = result.into_iter().collect();
+
+        Ok(address_set)
     }
 }

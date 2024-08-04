@@ -1,9 +1,11 @@
-mod block {
+pub mod block {
+    pub const DEFAULT_BLOCKS_NUMBER: u64 = 20445434;
+
     // 默认确认数。在区块链中，一个交易被确认意味着它被添加到区块链的块中，
     // 并且这些块已经被足够多的区块链节点验证和接受。确认数表示在一个交易被视为有效之前，
     // 网络需要在其之后生成的区块数量。
     // 一般来说，确认数越高，确认的安全性就越高，因为攻击者要修改交易历史记录就需要更多的计算能力。
-    const DEFAULT_CONFIRMATIONS: u8 = 64;
+    pub const DEFAULT_CONFIRMATIONS: u8 = 64;
     // 默认存款间隔。在区块链中，存款间隔可能指定了两个存款之间的最小时间间隔，以确保交易被处理和确认。
     // const DEFAULT_DEPOSIT_INTERVAL: u16 = 5000;
     // 默认提现间隔。类似于存款间隔，提款间隔可能指定了两次提款之间的最小时间间隔。
@@ -14,14 +16,20 @@ mod block {
     // const DEFAULT_COLD_INTERVAL: u16 = 500;
     // 默认块步长。在扫链代码中，处理区块链数据时可能会使用块步长来限制每次处理的块数量，以优化性能或避免超出资源限制。
     // const DEFAULT_BLOCKS_STEP: u16 = 500;
-    const DEFAULT_BLOCKS_STEP: u16 = 200;
+    pub const DEFAULT_BLOCKS_STEP: u8 = 3;
 
     // 空地址
     // const ZERO_ADDRESS: &str = "0x00";
 }
 
 
-mod eth {
-    // const ZK_FAIR_SEPOLIA_CHAIN_ID: u16 = 43851;
-    // const ZK_FAIR_CHAIN_ID: u16 = 42766;
+pub mod chain {
+    pub const ADDRESS_STR_0X: &str = "0x";
+
+}
+
+pub mod chain_eth {
+    // transfer(address _to, uint256 _value)
+    pub const ERC20_TRANSFER_METHOD_ID: &str = "0xa9059cbb";
+
 }

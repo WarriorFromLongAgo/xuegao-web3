@@ -1,7 +1,8 @@
-use actix_web::{HttpResponse, post, Responder};
+use std::sync::Arc;
+use actix_web::{HttpResponse, post, Responder, web};
+use actix_web::middleware::Logger;
 use actix_web::web::block;
 use log::info;
-
 use xuegao_fmk::web::fmk_error::FmkErrorEnum;
 use xuegao_fmk::web::fmk_result;
 use xuegao_fmk::web::fmk_result::FmkR;

@@ -8,7 +8,7 @@ pub enum BlockStatusEnum {
     Safe,
     Finalized,
     Pending,
-    // 0x10d4f
+    // 10d4f
     Number(String), // 允许传递区块高度
 }
 
@@ -33,7 +33,14 @@ impl BlockStatusEnum {
             BlockStatusEnum::Safe => "safe".to_string(),
             BlockStatusEnum::Finalized => "finalized".to_string(),
             BlockStatusEnum::Pending => "pending".to_string(),
-            BlockStatusEnum::Number(String) => String.clone(), // 或者你想要返回的其他值
+            BlockStatusEnum::Number(num) => {
+                // 如果不是以 "0x" 开头，则加上 "0x"
+                if num.starts_with("0x") {
+                    num.clone()
+                } else {
+                    format!("0x{}", num)
+                }
+            }
         }
     }
 }

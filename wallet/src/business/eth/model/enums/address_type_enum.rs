@@ -50,7 +50,7 @@ impl AddressTypeEnum {
 }
 #[cfg(test)]
 mod tests {
-    use crate::business::model::enums::address_type_enum::AddressTypeEnum;
+    use crate::business::eth::model::enums::address_type_enum::AddressTypeEnum;
 
     #[test]
     fn test_address_type_from_string() {

@@ -1,8 +1,9 @@
 use ethers::types::Address;
+use log::info;
 use rust_decimal::Decimal;
 use sqlx::PgPool;
 use xuegao_fmk::util::time_chrono_util;
-use crate::business::eth::call::eth_sign_service::create_address;
+use crate::business::eth::call::eth_sign::create_address;
 use crate::business::eth::model::enums::address_type_enum::AddressTypeEnum;
 use crate::business::eth::model::enums::coin_type_enum::CoinTypeEnum;
 use crate::business::wallet::model::doo::address_do::AddressDo;
@@ -88,7 +89,7 @@ pub async fn create_batch_addresses(pool: &PgPool, count: usize, address_type: A
         match insert_result {
             Ok(inserted_address) => {
                 // 处理成功插入的地址
-                println!("Inserted address: {:?}", inserted_address);
+                info!("insert success address {:?}", inserted_address);
             }
             Err(err) => {
                 // 处理插入错误

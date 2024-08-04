@@ -1,6 +1,10 @@
+use std::sync::Arc;
+use actix_web::middleware::Logger;
+use actix_web::web;
 use ethers::signers::{LocalWallet, Signer};
 use ethers::types::Address;
-use crate::business::eth::model::resp::address_info::AddressInfo;
+use log::info;
+use crate::business::eth::model::resp::address_info_resp::AddressInfo;
 
 pub fn private_create_address() -> (String, String, Address) {
     // 生成随机钱包
@@ -9,17 +13,17 @@ pub fn private_create_address() -> (String, String, Address) {
     // 获取私钥
     let private_key = wallet.signer().to_bytes();
     let private_key_hex = hex::encode(private_key);
-    eprintln!("create_address Private Key: 0x{}", private_key_hex);
+    info!("[xuegao-web3][eth_sign][private_create_address][private_key_hex={}]", private_key_hex);
 
     // 获取公钥
     let public_key = wallet.signer().verifying_key().to_encoded_point(false);
     let public_key_bytes = public_key.as_bytes();
     let public_key_hex = hex::encode(public_key_bytes);
-    eprintln!("create_address Public Key: 0x{}", public_key_hex);
+    info!("[xuegao-web3][eth_sign][private_create_address][public_key_hex={}]", public_key_hex);
 
     // 获取地址
     let address: Address = wallet.address();
-    eprintln!("create_address Address: {:?}", serde_json::to_string(&address));
+    info!("[xuegao-web3][eth_sign][private_create_address][address={:?}]", serde_json::to_string(&address));
     return (private_key_hex, public_key_hex, address);
 }
 

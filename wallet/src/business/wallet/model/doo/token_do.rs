@@ -1,4 +1,7 @@
+use std::collections::HashMap;
+
 use chrono::NaiveDateTime;
+use log::info;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
@@ -107,5 +110,36 @@ impl TokenDo {
             .await?;
 
         Ok(result)
+    }
+
+    // 列表 Tokens
+    pub async fn list_return_map(pool: &PgPool) -> Result<HashMap<String, TokenDo>, sqlx::Error> {
+        // 转换为 HashMap
+        let mut result_map = HashMap::new();
+
+        let db_list_result = Self::list(pool).await;
+
+        if db_list_result.is_err() {
+            let db_list_result_error = db_list_result.err().unwrap();
+            info!("[xuegao-web3][token_do][token_do][db_list_result_error={}]", db_list_result_error);
+            // 处理具体的 sqlx::Error 类型
+            return match db_list_result_error {
+                sqlx::Error::RowNotFound => {
+                    Ok(result_map)
+                }
+                _ => {
+                    // 处理其他 sqlx::Error 错误类型
+                    info!("[xuegao-web3][token_do][token_do][other err]");
+                    Ok(result_map)
+                }
+            };
+        } else {
+            let db_list = db_list_result.unwrap();
+
+            for token in db_list {
+                result_map.insert(token.token_address.clone(), token);
+            }
+        }
+        Ok(result_map)
     }
 }

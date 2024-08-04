@@ -1,5 +1,6 @@
 use ethers::providers::{Middleware, Provider};
-use crate::business::eth::call::eth_call_service::{get_block_by_block_hash, get_block_by_block_number, get_gas_price, get_max_priority_fee_per_gas, get_tx_by_tx_hash, get_tx_count_by_address, get_tx_receipt_by_tx_hash, latest_block_number};
+use crate::business::eth::call::eth_call::{get_block_by_block_hash, get_block_by_block_number, get_gas_price, get_max_priority_fee_per_gas, get_tx_by_tx_hash, get_tx_count_by_address, get_tx_receipt_by_tx_hash, latest_block_number};
+use crate::business::eth::model::enums::block_status_enum::BlockStatusEnum;
 
 #[tokio::test]
 async fn test_eth_block_number() {

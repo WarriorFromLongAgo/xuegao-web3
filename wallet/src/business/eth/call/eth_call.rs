@@ -1,13 +1,17 @@
 use std::string::ToString;
 
 use actix_web::Error;
+use log::info;
 use serde_json::Value;
 
 use xuegao_fmk::util::req_util;
+
 use crate::business::eth::model::enums::block_status_enum::BlockStatusEnum;
 use crate::business::eth::model::req::eth_block_number::EthBlockNumber;
 use crate::business::eth::model::req::eth_gas_price::EthGasPrice;
 use crate::business::eth::model::req::eth_max_priority_fee_per_gas::EthMaxPriorityFeePerGas;
+use crate::business::eth::model::resp::eth_block_resp::EthBlock;
+use crate::business::wallet::util::hex_dec_util::hex_to_dec;
 
 const ETH_JSON_RPC_URL: &str = "https://go.getblock.io/b54672ce0d524fd9b9aca108594d11b4";
 
@@ -90,20 +94,18 @@ pub async fn get_max_priority_fee_per_gas() -> EthMaxPriorityFeePerGas {
 
     match resp {
         Ok(response) => {
-            let response_string = response.to_string();
+            let response_string: String = response.to_string();
             eprintln!("get_max_priority_fee_per_gas response_string {}", response_string);
 
             // 提取 result 字段
-            let result_str = match response.get("result").and_then(Value::as_str) {
-                Some(hex_str) => hex_str,
+            let result_str: String = match response.get("result") {
+                Some(hex_str) => hex_str.as_str().unwrap_or("").to_string(),
                 None => panic!("Invalid response format, 'result' field not found or not a string"),
             };
             eprintln!("get_max_priority_fee_per_gas response_string result {}", result_str);
 
             // 去掉前缀 "0x" 并转换为十进制
-            let hex_str = &result_str[2..];
-            let decimal_value = u64::from_str_radix(hex_str, 16)
-                .expect("Failed to convert hex to decimal"); // 使用 expect 替代 unwrap，提供错误信息
+            let decimal_value = hex_to_dec(result_str.to_string()).expect("Failed to convert hex to decimal");
             eprintln!("get_max_priority_fee_per_gas {}", decimal_value);
 
             EthMaxPriorityFeePerGas {
@@ -118,23 +120,36 @@ pub async fn get_max_priority_fee_per_gas() -> EthMaxPriorityFeePerGas {
     }
 }
 
-pub async fn get_block_by_block_number(block_status_enum: BlockStatusEnum) -> Option<String> {
+pub async fn get_block_by_block_number(block_status_enum: BlockStatusEnum) -> EthBlock {
     let mut params = Vec::new();
     params.push(Value::String(block_status_enum.english()));
     params.push(Value::Bool(true));
     let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_getBlockByNumber", params).await;
 
-    // 根据返回结果返回合适的值
-    match resp {
-        Ok(response) => {
-            let response_string = response.to_string();
-            return Some(response_string);
-        }
-        Err(err) => {
-            // 直接抛出异常
-            panic!("Failed to fetch block: {}", err);
-        }
+    if (resp.is_err()) {
+        let resp_er = resp.err().unwrap();
+        panic!("Failed to fetch block: {}", resp_er);
     }
+    let resp_value = resp.unwrap();
+    info!("[xuegao-web3][eth_call][][resp_value={:?}]", serde_json::to_string(&resp_value));
+
+    let resp_value_result = resp_value["result"].clone();
+    if resp_value_result.is_null() {
+        panic!("Block not found for the given block number");
+    }
+    // 克隆 resp_value_result 以便在解析失败时使用
+    let resp_value_result_clone = resp_value_result.clone();
+    let mut block: EthBlock = match serde_json::from_value(resp_value_result) {
+        Ok(block) => block,
+        Err(e) => {
+            info!("[xuegao-web3][eth_call][resp_value_result][error={:?}]", serde_json::to_string(&resp_value_result_clone));
+            panic!("Failed to parse block response: {}", e)
+        },
+    };
+
+    block.deal_dec_hex();
+    info!("[xuegao-web3][eth_call][][block={:?}]", serde_json::to_string(&block));
+    return block;
 }
 
 

@@ -1,4 +1,3 @@
-use actix_http::header::TryIntoHeaderPair;
 use actix_http::StatusCode;
 use actix_web::http::header::ContentType;
 use actix_web::HttpResponse;

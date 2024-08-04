@@ -19,7 +19,7 @@ pub struct BlockDo {
 
 impl BlockDo {
     // 创建 Block
-    pub async fn create(&self, pool: &PgPool) -> Result<BlockDo, sqlx::Error> {
+    pub async fn insert(&self, pool: &PgPool) -> Result<BlockDo, sqlx::Error> {
         let query = r#"
             INSERT INTO blocks (hash, parent_hash, number, timestamp, rlp_bytes)
             VALUES ($1, $2, $3, $4, $5)
@@ -99,6 +99,36 @@ impl BlockDo {
         "#;
 
         let result = sqlx::query_as::<_, BlockDo>(query)
+            .fetch_all(pool)
+            .await?;
+
+        Ok(result)
+    }
+
+    // 列表 Blocks
+    pub async fn list_order_by_number_limit_1(pool: &PgPool) -> Result<BlockDo, sqlx::Error> {
+        let query = r#"
+            SELECT hash, parent_hash, number, timestamp, rlp_bytes
+            FROM blocks order by number limit 1;
+        "#;
+
+        let result = sqlx::query_as::<_, BlockDo>(query)
+            .fetch_all(pool)
+            .await?;
+
+        // 获取第一个区块，如果存在
+        result.into_iter().next().ok_or(sqlx::Error::RowNotFound)
+    }
+
+    // 列表 Blocks
+    pub async fn list_order_by_number_limit(pool: &PgPool, limit: i32) -> Result<Vec<BlockDo>, sqlx::Error> {
+        let query = r#"
+            SELECT hash, parent_hash, number, timestamp, rlp_bytes
+            FROM blocks order by number limit $1;
+        "#;
+
+        let result = sqlx::query_as::<_, BlockDo>(query)
+            .bind(limit)
             .fetch_all(pool)
             .await?;
 

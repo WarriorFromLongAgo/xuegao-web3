@@ -1,50 +1,23 @@
-use std::{env, io};
+#![recursion_limit = "512"]
 
+use std::{env, io};
+use std::sync::{Arc, Mutex};
 use actix_http::body::MessageBody;
 use actix_web::{App, dev::Service as _, HttpServer, middleware};
 use actix_web::middleware::DefaultHeaders;
 use actix_web::web;
 use log::info;
 use sqlx::postgres::PgPoolOptions;
+use xuegao_fmk::config::log4rs::init_logger;
+use xuegao_fmk::util::time_chrono_util::format;
 use xuegao_fmk::util::time_util;
-use crate::business::{chain_service, job};
-use crate::business::service::chain_scan_service::chain_scan_service;
+use crate::business::eth::service::create_address_service::create_batch_addresses_test;
+use crate::business::wallet::api::api_controller::{deposits_list, health, withdrawals_list, withdrawals_submit};
+use crate::business::wallet::job::deposit_job::deposit_job;
+use crate::config::db::DATABASE_URL;
 
 mod business;
 mod config;
-
-fn init_logger() {
-    use std::io::Write;
-
-    let env = env_logger::Env::default()
-        .filter_or(env_logger::DEFAULT_FILTER_ENV, "info");
-
-    env::set_var("RUST_LOG", "sqlx=debug");
-
-    // 设置日志打印格式
-    env_logger::Builder::from_env(env)
-        .format(|buf, record| {
-            writeln!(
-                buf,
-                "{} {} [{}] {}",
-                time_util::format_system_time(time_util::now()),
-                record.level(),
-                record.module_path().unwrap_or("<unnamed>"),
-                &record.args()
-            )
-        })
-        .init();
-    info!("env_logger initialized.");
-}
-
-// pub async fn mysql_conn() -> MySqlPool {
-//     let database_url = env::var("DATABASE_URL").expect("Not configured in .env");
-//     MySqlPoolOptions::new()
-//         .max_connections(50)
-//         .connect(&database_url)
-//         .await
-//         .unwrap()
-// }
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -52,50 +25,33 @@ async fn main() -> std::io::Result<()> {
 
     let pool = PgPoolOptions::new()
         .max_connections(10)
-        .connect(business::config::db::DATABASE_URL)
+        .connect(DATABASE_URL)
         .await
         .expect("Failed to create pool.");
-    eprintln!("链接数据库成功");
+    info!("链接数据库成功");
+    // 将 pool 包装在 Arc 中
+    let pool_arc = Arc::new(pool);
 
-
-    chain_service::create_address_service::create_batch_addresses_test(&pool).await;
-    eprintln!("保存数据成功");
+    create_batch_addresses_test(&pool_arc).await;
+    info!("保存数据成功");
 
     // 启动定时任务
-    tokio::spawn(business::job::deposit_job::deposit_job());
+    let pool_arc_clone = Arc::clone(&pool_arc);
+    tokio::spawn(async move {
+        deposit_job(&pool_arc_clone).await;
+    });
 
     HttpServer::new(move || {
         let mut app = App::new();
 
-        app = app.app_data(web::Data::new(pool.clone()));
+        // 使用已有的 pool_arc，不需要再次克隆
+        let pool_arc_clone_v2 = Arc::clone(&pool_arc);
+        app = app.app_data(web::Data::new(pool_arc_clone_v2));
 
-        // app = app.wrap_fn(|req, srv| {
-        //     println!("Hi from start. You requested: {}", req.path());
-        //     srv.call(req).map(|res| {
-        //         println!("Hi from response");
-        //         res
-        //     })
-        // });
-
-        // std::env::set_var("RUST_LOG", "actix_web=info");
-        // env_logger::init();
-        // app = app.wrap(Logger::default());
-        // app = app.wrap(Logger::new("%a %{User-Agent}i"));
-
-        // app = app.wrap(middleware::DefaultHeaders::new().header("X-Version", "0.2"));
-
-        // app = app.route("/health", web::get().to(|| async { "Hello, world!" }));
-        // app = app.service(business::service::chain_service::throw_err);
-        // app = app.service(business::service::chain_service::throw_fmk_error);
-        // app = app.service(business::service::chain_service::responder_impl_responder);
-        // app = app.service(business::service::chain_service::return_json);
-        // app = app.service(business::service::chain_service::log_info);
-
-        app = app.service(business::api::api_controller::health);
-        app = app.service(business::api::api_controller::deposits_list);
-
-        app = app.service(business::api::api_controller::withdrawals_list);
-        app = app.service(business::api::api_controller::withdrawals_submit);
+        app = app.service(health);
+        app = app.service(deposits_list);
+        app = app.service(withdrawals_list);
+        app = app.service(withdrawals_submit);
 
         return app;
     })

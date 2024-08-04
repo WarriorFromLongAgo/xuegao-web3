@@ -1,0 +1,27 @@
+# log4rs.yml
+
+appenders:
+  file:
+    kind: file
+    path: "log/xuegao-web3-output.log"
+    encoder:
+      pattern: "{d} [{t}] {l} - {m}{n}"
+
+  console:
+    kind: console
+    encoder:
+      pattern: "{d} [{t}] {l} - {m}{n}"
+
+root:
+  level: info
+  appenders:
+    - file
+    - console
+
+
+loggers:
+  sqlx:
+    level: debug
+    appenders:
+      - stdout
+      - file

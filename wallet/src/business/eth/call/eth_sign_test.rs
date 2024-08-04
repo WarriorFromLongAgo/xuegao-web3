@@ -2,10 +2,8 @@
 mod tests {
     use ethers::abi::AbiEncode;
     use ethers::addressbook::Address;
-    use crate::business::chain_service::eth_sign_service::{create_address, private_create_address};
-    use crate::business::eth::call::eth_sign_service::{create_address, private_create_address};
-    use crate::business::eth::model::resp::address_info::AddressInfo;
-    use crate::business::model::chain::address_info::AddressInfo;
+    use crate::business::eth::call::eth_sign::{create_address, private_create_address};
+    use crate::business::eth::model::resp::address_info_resp::AddressInfo;
 
     #[test]
     fn test_create_address() {

@@ -1,5 +1,7 @@
 use chrono::{DateTime, Local, NaiveDateTime, Utc};
 
+const Y_M_D_H_M_S: &str = "%Y-%m-%d %H:%M:%S";
+
 pub fn now_utc() -> DateTime<Utc> {
     // 获取当前时间并打印
     let now = Utc::now();
@@ -18,6 +20,14 @@ pub fn now() -> DateTime<Local> {
     return beijing_time;
 }
 
+pub fn format() -> String {
+    // 获取当前UTC时间
+    let now = Utc::now();
+    // 转换为本地时间（北京时区）
+    let beijing_time = now.with_timezone(&Local);
+    // 使用 format! 宏格式化时间
+    beijing_time.format(Y_M_D_H_M_S).to_string()
+}
 
 pub fn now_time_utc() -> NaiveDateTime {
     // 获取当前时间并打印
