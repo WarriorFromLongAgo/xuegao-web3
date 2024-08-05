@@ -86,8 +86,8 @@ impl EthBlock {
         self.timestamp_dec = temp_timestamp.unwrap();
         self.timestamp_hex = self.timestamp.clone();
 
-        for mut tempTx in &mut self.transactions {
-            tempTx.deal_dec_hex();
+        for temp_tx in &mut self.transactions {
+            temp_tx.deal_dec_hex();
         }
     }
 

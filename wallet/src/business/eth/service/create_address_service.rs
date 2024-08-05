@@ -1,6 +1,7 @@
 use ethers::types::Address;
 use log::info;
 use rust_decimal::Decimal;
+use rust_decimal::prelude::Zero;
 use sqlx::PgPool;
 use xuegao_fmk::util::time_chrono_util;
 use crate::business::eth::call::eth_sign::create_address;
@@ -57,25 +58,25 @@ pub async fn create_batch_addresses(pool: &PgPool, count: usize, address_type: A
     // addresses_vec.iter_mut();
     // addresses_vec.into_iter();
 
-    for tempAddInfo in addresses_vec.into_iter() {
+    for temp_add_info in addresses_vec.into_iter() {
         let address_do = AddressDo {
             guid: None,
             user_uid: "user_uid".to_string(),
-            address: tempAddInfo.address.clone(),
+            address: temp_add_info.address.clone(),
             address_type: address_type.english().to_string(),
-            private_key: tempAddInfo.private_key,
-            public_key: tempAddInfo.public_key,
+            private_key: temp_add_info.private_key,
+            public_key: temp_add_info.public_key,
             timestamp: now,
         };
         add_do_vec.push(address_do);
 
         let balance_do = BalanceDo {
             guid: None,
-            address: tempAddInfo.address.clone(),
+            address: temp_add_info.address.clone(),
             address_type: address_type.english().to_string(),
             token_address: format!("0x{}", hex::encode(Address::zero().as_bytes())), // 根据实际情况设置代币地址
-            balance: Decimal::new(0, 0),
-            lock_balance: Decimal::new(0, 0),
+            balance: Decimal::zero(),
+            lock_balance: Decimal::zero(),
             timestamp: now,
         };
         balance_do_vec.push(balance_do);

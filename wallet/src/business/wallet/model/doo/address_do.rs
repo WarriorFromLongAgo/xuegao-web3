@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
+use log::info;
 use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, PgPool};
+use sqlx::{Error, FromRow, PgPool};
 use sqlx::types::chrono::NaiveDateTime;
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -123,14 +124,21 @@ impl AddressDo {
         "#;
 
         // 执行查询并获取所有结果
-        let result: Vec<String> = sqlx::query_scalar(query)
+        let result: Result<Vec<String>, sqlx::Error> = sqlx::query_scalar(query)
             .bind(address_type)
             .fetch_all(pool)
-            .await?;
-
-        // 将结果转换为 HashSet
-        let address_set: HashSet<String> = result.into_iter().collect();
-
-        Ok(address_set)
+            .await;
+        info!("[xuegao-web3][address_do][list_address][result]");
+        return match result {
+            Err(error) => {
+                info!("[xuegao-web3][address_do][list_address][error={}]", error);
+                Ok(HashSet::new())
+            }
+            Ok(address_vec) => {
+                let address_vec: HashSet<String> = address_vec.into_iter().collect();
+                info!("[xuegao-web3][address_do][list_address][address_vec={:?}]", serde_json::to_string(&address_vec));
+                Ok(address_vec)
+            }
+        }
     }
 }

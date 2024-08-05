@@ -22,7 +22,7 @@ impl AddressTypeEnum {
         match self {
             AddressTypeEnum::HotWallet => "HotWallet",
             AddressTypeEnum::ColdWallet => "ColdWallet",
-            AddressTypeEnum::CollectionWallet => "AggregationWallet",
+            AddressTypeEnum::CollectionWallet => "CollectionWallet",
             AddressTypeEnum::UserAddress => "UserAddress",
         }
     }

@@ -24,7 +24,7 @@ pub struct WithdrawDo {
     pub fee: Decimal,
     /// 交易金额
     pub amount: Decimal,
-    /// 交易状态
+    /// 交易状态 // 0:提现未签名发送,1:提现已经发送到区块链网络；2:提现已上链；3:提现在钱包层已完成；4:提现已通知业务；5:提现成功
     pub status: i16,
     /// 交易索引
     pub transaction_index: i64,

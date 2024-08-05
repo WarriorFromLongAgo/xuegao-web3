@@ -28,7 +28,7 @@ async fn main() -> std::io::Result<()> {
         .connect(DATABASE_URL)
         .await
         .expect("Failed to create pool.");
-    info!("链接数据库成功");
+    info!("链接数据库成功 {:?}", pool);
     // 将 pool 包装在 Arc 中
     let pool_arc = Arc::new(pool);
 

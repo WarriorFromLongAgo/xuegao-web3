@@ -23,6 +23,9 @@ INSERT INTO tokens (token_address, decimal, token_name, collect_amount, timestam
                                                                                        ('0x890abcdef1234567890abcdef123456789012345', 18, 'Token8', 80.0, '2024-07-28 12:07:00'),
                                                                                        ('0x90abcdef1234567890abcdef1234567890123456', 18, 'Token9', 90.0, '2024-07-28 12:08:00'),
                                                                                        ('0x0abcdef1234567890abcdef12345678901234567', 18, 'Token10', 100.0, '2024-07-28 12:09:00');
+insert into tokens(token_address, decimal, token_name, collect_amount, timestamp)
+VALUES
+    ('0x3744da57184575064838bbc87a0fc791f5e39ea2', 10, 'test', 1000, now()  );
 
 
 -- 插入测试数据

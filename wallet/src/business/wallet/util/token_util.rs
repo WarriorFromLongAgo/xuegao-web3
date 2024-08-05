@@ -1,4 +1,11 @@
+use rust_decimal::Decimal;
+use rust_decimal::prelude::Zero;
 use crate::config::constant::chain;
+
+pub fn input_data_is_token_transfer(data: String) -> bool {
+    // MethodID 是前 4 字节（8 个十六进制字符）
+    data.len() < 138
+}
 
 pub fn input_data_2_method_id(data: String) -> String {
     // MethodID 是前 4 字节（8 个十六进制字符）
@@ -15,11 +22,16 @@ pub fn input_data_2_to_address(data: String) -> String {
     format!("{}{}", chain::ADDRESS_STR_0X, trimmed_address_hex)
 }
 
-pub fn input_data_2_amount(data: String) -> u128 {
-    // 目标地址在数据中的位置是从第 10 字符开始，长度为 32 字节（64 个十六进制字符）
+pub fn input_data_2_amount(data: String) -> Decimal {
+    // 目标地址在数据中的位置是从第 74 个字符开始，长度为 32 字节（64 个十六进制字符）
     let value_hex = &data[74..];
     eprintln!("[xuegao-web3][token_util][input_data_2_amount][value_hex={}]", value_hex);
-    u128::from_str_radix(value_hex, 16).unwrap_or_default()
+
+    // 尝试将十六进制字符串转换为 decimal
+    match u128::from_str_radix(value_hex, 16) {
+        Ok(value) => Decimal::from(value),
+        Err(_) => Decimal::zero(),
+    }
 }
 
 #[cfg(test)]

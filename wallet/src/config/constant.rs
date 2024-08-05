@@ -1,5 +1,5 @@
 pub mod block {
-    pub const DEFAULT_BLOCKS_NUMBER: u64 = 20445434;
+    pub const DEFAULT_BLOCKS_NUMBER: u64 = 20454299;
 
     // 默认确认数。在区块链中，一个交易被确认意味着它被添加到区块链的块中，
     // 并且这些块已经被足够多的区块链节点验证和接受。确认数表示在一个交易被视为有效之前，
@@ -16,7 +16,7 @@ pub mod block {
     // const DEFAULT_COLD_INTERVAL: u16 = 500;
     // 默认块步长。在扫链代码中，处理区块链数据时可能会使用块步长来限制每次处理的块数量，以优化性能或避免超出资源限制。
     // const DEFAULT_BLOCKS_STEP: u16 = 500;
-    pub const DEFAULT_BLOCKS_STEP: u8 = 3;
+    pub const DEFAULT_BLOCKS_STEP: u8 = 1;
 
     // 空地址
     // const ZERO_ADDRESS: &str = "0x00";

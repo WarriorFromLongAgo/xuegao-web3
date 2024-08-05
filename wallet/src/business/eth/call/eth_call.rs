@@ -126,7 +126,7 @@ pub async fn get_block_by_block_number(block_status_enum: BlockStatusEnum) -> Et
     params.push(Value::Bool(true));
     let resp: Result<Value, Error> = req_util::HttpUtil::send_json_rpc(ETH_JSON_RPC_URL, "eth_getBlockByNumber", params).await;
 
-    if (resp.is_err()) {
+    if resp.is_err() {
         let resp_er = resp.err().unwrap();
         panic!("Failed to fetch block: {}", resp_er);
     }
