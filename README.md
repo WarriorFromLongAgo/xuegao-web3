@@ -1,5 +1,5 @@
 # xuegao-web3
-rust js ts
+项目中包含 rust golang js ts
 
 # rust_scan_eth
 rust 扫链服务
