@@ -1,4 +1,7 @@
 # xuegao-web3
-采用分支的方式，手写框架，学习框架使用
+rust js ts
+
+# rust_scan_eth
+rust 扫链服务
 
 
