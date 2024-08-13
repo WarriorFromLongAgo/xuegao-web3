@@ -15,6 +15,10 @@ contract Counter is Initializable, ReentrancyGuardUpgradeable, OwnableUpgradeabl
 
     mapping(address => uint256) private balances;
 
+    constructor() {
+        _disableInitializers();
+    }
+
     function initialize(address input_Owner, uint256 input_number) public initializer {
         console.log("Counter initialize msg.sender ", msg.sender);
         console.log("Counter initialize input_Owner ", address(input_Owner));
