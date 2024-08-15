@@ -1,3 +1,8 @@
+dectohex没高位填0，有些场景不好使 还有入参不应以String
+    有时候接受的长度需任意,可能超出u64
+    
+    
+
 pub fn hex_to_dec(hex_str: String) -> Result<u64, std::num::ParseIntError> {
     let cleaned_hex = hex_str.trim_start_matches("0x");
     u64::from_str_radix(cleaned_hex, 16)
