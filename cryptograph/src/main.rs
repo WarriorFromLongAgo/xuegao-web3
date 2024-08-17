@@ -1,4 +1,4 @@
-use actix_web::{App, HttpResponse, HttpServer, Responder, web};
+use actix_web::{App, Error, HttpResponse, HttpServer, Responder, web};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -56,9 +56,36 @@ struct PostParams {
     field2: String,
 }
 
+// 处理 POST 请求的处理函数，使用 JSON 解析
+async fn sign_tx_legacy(item: web::Json<TransactionRequest>) -> impl Responder {
+    let str = format!("Received: field1 = {}, field2 = {}", item.field1, item.field2);
+    str.into();
+
+
+    println!("str {}", str);
+
+    // 将 Person 实例序列化为 JSON 字符串
+    let json_string = serde_json::to_string(&item).unwrap();
+    println!("Serialized JSON: {}", json_string);
+
+    // 如果需要更漂亮的格式，可以使用 to_string_pretty
+    let pretty_json_string = serde_json::to_string_pretty(&item).unwrap();
+    println!("Pretty Serialized JSON: {}", pretty_json_string);
+
+    // 直接构造 JSON 值并序列化
+    let direct_json = json!({
+        "name": "Bob",
+        "age": 25,
+        "address": "456 Another St"
+    });
+    println!("Direct JSON: {}", direct_json.to_string());
+
+    HttpResponse::Ok().json(str)
+}
+
 
 #[actix_web::main]
-async fn main() -> Result<()> {
+async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .route("/get", web::get().to(get_handler)) // GET 请求处理
