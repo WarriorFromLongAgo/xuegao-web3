@@ -91,8 +91,8 @@ contract XuegaoToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeabl
     ///              - The specified time interval at which mints can occur is 1 year (365 days)
     ///     - the parameter {amount} must be less than or equal to {maxMintAmount} as computed above
     ///     - the {blockTimestamp} of the block in which this function is called must be greater than or equal to {nextMint}
-    /// @param _recipient The address to mint tokens to
-    /// @param _amount The amount of tokens to mint
+    /// @param input_account The address to mint tokens to
+    /// @param inpuitAmount The amount of tokens to mint
     function xuegao_mint(address input_account, uint256 inpuitAmount) public onlyOwner nonReentrant {
 //        分析此次可以 mint 多少
         uint256 maximumMintAmount = (totalSupply() * mintCapNumerator) / MINT_CAP_DENOMINATOR;
@@ -110,7 +110,7 @@ contract XuegaoToken is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeabl
     /// @dev Requirements:
     ///     - The caller must be the contract owner
     ///     - {_mintCapNumerator} must be less than or equal to {MINT_CAP_MAX_NUMERATOR}
-    /// @param _mintCapNumerator The new numerator of the mint cap
+    /// @param input_mintCapNumerator The new numerator of the mint cap
     function xuegao_dealMintCapNumerator(uint256 input_mintCapNumerator) public onlyOwner nonReentrant {
 //        设置最小可mint的百分比
         if (input_mintCapNumerator > MINT_CAP_MAX_NUMERATOR) {

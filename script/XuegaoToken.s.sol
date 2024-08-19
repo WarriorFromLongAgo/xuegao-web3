@@ -10,7 +10,7 @@ import {XuegaoToken} from "../src/XuegaoToken.sol";
 contract XuegaoTokenScript is Script {
     XuegaoToken public xuegaoToken;
     ProxyAdmin public proxy;
-    address public testUser = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address public testUser = 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
 
     function setUp() public {}
 
