@@ -7,7 +7,6 @@ docs/
 
 # Dotenv file
 .env
-/lib
 /broadcast
 
 .idea

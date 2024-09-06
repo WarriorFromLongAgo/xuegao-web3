@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-contract principle_arr_01 {
+contract contract_delegate_2 {
     uint128 public a = 5;
     uint8[] public myDynamicArray;
     uint64 public b = 1;
