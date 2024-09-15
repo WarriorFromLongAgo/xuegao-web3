@@ -5,7 +5,7 @@ contract principle_arr_01 {
     uint128 public a = 5;
     uint8[] public myDynamicArray;
     uint64 public b = 1;
-    uint8[5] public myStaticArray = [1, 2, 3, 4, 5]; // 存储在storage中，初始化为1-5
+    uint8[20] public myStaticArray = [1, 2, 3, 4, 5]; // 存储在storage中，初始化为1-5
     uint64 public c = 1;
 
     function pushToArray(uint8 _value) public {

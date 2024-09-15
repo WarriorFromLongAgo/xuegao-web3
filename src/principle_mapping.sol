@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 contract principle_mapping {
+    uint32 public c = 5;
     mapping(uint256 => uint256) public a;
     uint256 public b = 5;
 
