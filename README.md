@@ -15,6 +15,10 @@ https://book.getfoundry.sh/
 
 ## Usage
 
+### look slot
+forge inspect src/principle_number.sol:principle_number storage-layout --pretty
+
+
 ### Build
 
 ```shell
