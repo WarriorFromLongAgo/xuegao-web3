@@ -7,15 +7,23 @@ import {TransactionRequest} from "@ethersproject/abstract-provider";
  * HD 钱包生成地址
  * */
 export function createEthAddress(seedHex: string, addressIndex: string) {
+    console.log("createEthAddress seedHex", seedHex)
     let seedHexToBuffer: Buffer = Buffer.from(seedHex, 'hex')
 
     const hdNode = ethers.utils.HDNode.fromSeed(seedHexToBuffer);
+    console.log("createEthAddress hdNode", JSON.stringify(hdNode))
 
+    const path = "m/44'/10'/0'/0/" + addressIndex + '';
+    console.log("createEthAddress path", path)
     const {
         privateKey,
         publicKey,
         address
-    } = hdNode.derivePath("m/44'/10'/0'/0/" + addressIndex + '');
+    } = hdNode.derivePath(path);
+
+    console.log("createEthAddress privateKey", privateKey)
+    console.log("createEthAddress publicKey", publicKey)
+    console.log("createEthAddress address", address)
 
     return JSON.stringify({
         privateKey,
