@@ -1,4 +1,4 @@
-package eth
+package ethtest
 
 import (
 	"crypto/ecdsa"
