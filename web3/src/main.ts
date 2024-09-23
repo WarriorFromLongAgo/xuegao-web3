@@ -1,19 +1,14 @@
-import {derivePath, getPublicKey} from "ed25519-hd-key";
+import { Keypair } from '@solana/web3.js';
 
-export function createAddress(seedHex: string, addressIndex: string) {
-    const {key} = derivePath("m/44'/626'/0'/" + addressIndex + "'", seedHex);
+export function generateSolanaWallet() {
+    const keypair = Keypair.generate();
+    const publicKey = keypair.publicKey.toString();
+    const privateKey = Buffer.from(keypair.secretKey).toString('hex');
 
-    const pubKey = getPublicKey(key, false).toString("hex");
+    // 生成地址
+    const address = publicKey; // 公钥即为钱包地址
 
-    return {
-        privateKey: key.toString("hex") + pubKey,
-        publicKey: pubKey,
-        address: "k:" + pubKey,
-    }
-}
-
-export function pubKeyToAddress(pubKey: string): string {
-    return "k:" + pubKey
+    return { publicKey, privateKey, address };
 }
 
 // export function signKdaTransaction(params: any): string {

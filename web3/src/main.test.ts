@@ -1,17 +1,20 @@
-import {createAddress} from "./main";
-import {mnemonicToSeedSync} from "bip39";
+import {generateSolanaWallet} from './main';
 
+test('should generate a valid wallet with public and private keys', () => {
+    const wallet = generateSolanaWallet();
 
-test('create kda address', () => {
-    const mnemonic = 'raw cherry park music seed credit rather model wrap human demand trade'
-    let seed = mnemonicToSeedSync(mnemonic);
-    const account = createAddress(seed.toString("hex"), "0")
-    console.log(account)
+    // 检查是否生成了公钥、私钥和地址
+    expect(wallet).toHaveProperty('publicKey');
+    expect(wallet).toHaveProperty('privateKey');
+    expect(wallet).toHaveProperty('address');
+
+    // 检查公钥、私钥和地址是否为字符串并且长度符合标准
+    expect(typeof wallet.publicKey).toBe('string');
+    expect(wallet.publicKey.length).toBeGreaterThan(0);
+
+    expect(typeof wallet.privateKey).toBe('string');
+    expect(wallet.privateKey.length).toBeGreaterThan(0);
+
+    expect(wallet.address).toBe(wallet.publicKey); // 地址等于公钥
 });
-
-// 如何找到 kda 用的是什么方式，生成的地址
-
-
-
-
 
