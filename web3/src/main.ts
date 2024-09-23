@@ -1,13 +1,11 @@
 import {derivePath, getPublicKey} from "ed25519-hd-key";
-import TonWeb from "tonweb";
 import BigNumber from "bignumber.js";
+// 引入 tonweb 库
+import TonWeb from 'tonweb';
+import { mnemonicNew, mnemonicToSeed, keyPairFromSeed } from 'ton-crypto';
+import nacl from 'tweetnacl';
 
-// console.log
-// addressInfo=== {
-//     privateKey: '1079e489e04925bc3207db41ab0d4341c9f3c7b808078c9a8320e5e2f3471db22dc315b7ba636eec21527be1f2edfac287addb235c1eb71a70300c1208d30f9c',
-//     publicKey: '2dc315b7ba636eec21527be1f2edfac287addb235c1eb71a70300c1208d30f9c',
-//     address: 'EQA5PEhPzGZgmMOk9Fr2sPEAY03HLueelXFXFWdwKxh0h7Pq'
-// }
+const tonweb = new TonWeb();
 
 export async function createTonAddress(seedHex: string, addressIndex: number) {
     const {key} = derivePath("m/44'/607'/1'/" + addressIndex + "'", seedHex);
@@ -29,6 +27,59 @@ export async function createTonAddress(seedHex: string, addressIndex: number) {
     }
 }
 
+// 生成 HD 钱包地址的方法
+export async function generateHDWallet() {
+    try {
+        const mnemonic = await mnemonicNew();
+        const seed = await mnemonicToSeed(mnemonic, '', null); // 提供空字符串作为密码
+
+        // 确保种子大小为 32 字节
+        if (seed.length !== 32) {
+            throw new Error('生成的种子大小不正确');
+        }
+
+        const keyPair = keyPairFromSeed(seed);
+
+        const publicKey = keyPair.publicKey;
+        const secretKey = keyPair.secretKey;
+
+        const WalletClass = tonweb.wallet.all.v3R2;
+        const wallet = new WalletClass(tonweb.provider, {
+            publicKey: publicKey,
+            wc: 0
+        });
+
+        const address = await wallet.getAddress();
+        console.log('HD 钱包地址:', address.toString(true, true, true));
+        console.log('助记词:', mnemonic.join(' '));
+        console.log('公钥:', Buffer.from(publicKey).toString('hex'));
+        console.log('私钥:', Buffer.from(secretKey).toString('hex'));
+    } catch (error) {
+        console.error('生成 HD 钱包地址时出错:', error);
+    }
+}
+
+// 生成 KeyPair 钱包地址的方法
+export async function generateKeyPairWallet() {
+    try {
+        const keyPair = nacl.sign.keyPair();
+        const publicKey = keyPair.publicKey;
+        const secretKey = keyPair.secretKey;
+
+        const WalletClass = tonweb.wallet.all.v3R2;
+        const wallet = new WalletClass(tonweb.provider, {
+            publicKey: publicKey,
+            wc: 0
+        });
+
+        const address = await wallet.getAddress();
+        console.log('KeyPair 钱包地址:', address.toString(true, true, true));
+        console.log('公钥:', Buffer.from(publicKey).toString('hex'));
+        console.log('私钥:', Buffer.from(secretKey).toString('hex'));
+    } catch (error) {
+        console.error('生成 KeyPair 钱包地址时出错:', error);
+    }
+}
 
 export async function SignTransaction(params: {
     from: string;
@@ -74,5 +125,3 @@ export async function SignTransaction(params: {
         "rawtx": TonWeb.utils.bytesToBase64(boc)
     }
 }
-
-

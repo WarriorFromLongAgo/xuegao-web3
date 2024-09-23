@@ -1,6 +1,5 @@
 import bip39 = require('bip39');
-import {createTonAddress, SignTransaction} from "./main";
-
+import {createTonAddress, generateHDWallet, generateKeyPairWallet, SignTransaction} from "./main";
 
 test('create address', async () => {
     const mnemonic = "absurd junior glimpse analyst plug jump account barrel slight swim hidden remove";
@@ -27,5 +26,11 @@ test('sign transaction', async () => {
     console.log("sign_message===", sign_message)
 })
 
+
+test(' generateTonWallet ', async () => {
+    // 假设这是您定义的函数
+    await generateHDWallet()
+    await generateKeyPairWallet()
+});
 
 
