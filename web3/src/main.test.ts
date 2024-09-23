@@ -1,14 +1,24 @@
-import addNumbers from "./main";
+import {generateSolanaWallet} from "./main";
 
 
-test('the data is peanut butter', () => {
-    expect(1).toBe(1)
+test('create solana address', () => {
+    const wallet = generateSolanaWallet();
+
+    // 检查是否生成了公钥、私钥和地址
+    expect(wallet).toHaveProperty('publicKey');
+    expect(wallet).toHaveProperty('privateKey');
+    expect(wallet).toHaveProperty('address');
+
+    // 检查公钥、私钥和地址是否为字符串并且长度符合标准
+    expect(typeof wallet.publicKey).toBe('string');
+    expect(wallet.publicKey.length).toBeGreaterThan(0);
+
+    expect(typeof wallet.privateKey).toBe('string');
+    expect(wallet.privateKey.length).toBeGreaterThan(0);
+
+    expect(wallet.address).toBe(wallet.publicKey); // 地址等于公钥
 });
 
-test('add', () => {
-    let number = addNumbers(1,2);
-    console.log("add ", number)
-});
 
 
 

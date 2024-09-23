@@ -1,12 +1,12 @@
+import { Keypair } from '@solana/web3.js';
 
-// 定义一个方法来计算两个数字的和
-function addNumbers(a: number, b: number): number {
-    return a + b;
+export function generateSolanaWallet() {
+    const keypair = Keypair.generate();
+    const publicKey = keypair.publicKey.toString();
+    const privateKey = Buffer.from(keypair.secretKey).toString('hex');
+
+    // 生成地址
+    const address = publicKey; // 公钥即为钱包地址
+
+    return { publicKey, privateKey, address };
 }
-
-export default addNumbers;
-
-
-
-
-
