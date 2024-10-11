@@ -48,7 +48,8 @@ $ anvil
 ### Deploy
 
 ```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+forge script script/DeployNewNftManager.s.sol:DeployNewNftManager --rpc-url $env:RPC_URL --private-key $env:PRIVATE_KEY --broadcast -vvvv --ffi
+   
 ```
 
 ### Cast
