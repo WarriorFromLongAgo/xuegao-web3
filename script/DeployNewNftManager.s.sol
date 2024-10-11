@@ -31,8 +31,8 @@ contract DeployNewNftManager is Script {
         console.log("deploy nftManagerImpl:", address(nftManagerImpl));
         console.log("deploy proxyNftManager:", address(proxyNftManager));
 
-        NewNftManager(address(proxyNftManager)).createNFT(1);
-        NewNftManager(address(proxyNftManager)).createNFT(2);
+        NewNftManager(address(proxyNftManager)).createNFT(1, "https://www.fishcake.org/image/1.png");
+        NewNftManager(address(proxyNftManager)).createNFT(2, "https://www.fishcake.org/image/2.png");
 
         string memory basicNftUri = NewNftManager(address(proxyNftManager)).tokenURI(0);
         console.log("Basic NFT (TokenID: 0) URI:", basicNftUri);

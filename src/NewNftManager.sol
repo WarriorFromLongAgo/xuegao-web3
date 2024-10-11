@@ -13,9 +13,7 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
 
     uint256 private _nextTokenId;
     mapping(uint256 => uint8) public nftMintType;
-
-    string public basicNftImage;
-    string public proNftImage;
+    mapping(uint256 => string) public nftImageUrls;
 
     event CreateNFT(
         address indexed creator,
@@ -35,17 +33,15 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
         __ERC721_init("Fishcake Pass NFT", "FNFT");
         __Ownable_init(_initialOwner);
         __ReentrancyGuard_init();
-
-        basicNftImage = "https://www.fishcake.io/_next/image?url=%2Ficons%2Ffishcake%2Fnft-basic-create.png&w=256&q=75";
-        proNftImage = "https://www.fishcake.io/_next/image?url=%2Ficons%2Ffishcake%2Fnft-pro-create.png&w=256&q=75";
     }
 
-    function createNFT(uint8 _type) external nonReentrant returns (uint256) {
+    function createNFT(uint8 _type, string memory _imageUrl) external nonReentrant returns (uint256) {
         require(_type == 1 || _type == 2, "NewNftManager createNFT: type can only equal 1 or 2");
 
         uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
         nftMintType[tokenId] = _type;
+        nftImageUrls[tokenId] = _imageUrl;
 
         emit CreateNFT(msg.sender, tokenId, _type);
 
@@ -56,7 +52,7 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
         require(_ownerOf(tokenId) != address(0), "ERC721Metadata: URI query for nonexistent token");
 
         uint8 nftType = nftMintType[tokenId];
-        string memory image = nftType == 1 ? basicNftImage : proNftImage;
+        string memory image = nftImageUrls[tokenId];
         string memory name = nftType == 1 ? "Fishcake Basic Pass" : "Fishcake Pro Pass";
         string memory description = nftType == 1 ? "A Fishcake Basic Pass" : "A Fishcake Pro Pass";
 
@@ -79,13 +75,4 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
         return super.supportsInterface(interfaceId);
     }
 
-    function updateNftImage(uint8 _type, string memory _newImageUrl) external onlyOwner {
-        require(_type == 1 || _type == 2, "Invalid NFT type");
-        if (_type == 1) {
-            basicNftImage = _newImageUrl;
-        } else {
-            proNftImage = _newImageUrl;
-        }
-        emit UpdatedNftImage(_type, _newImageUrl);
-    }
 }
