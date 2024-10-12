@@ -9,3 +9,5 @@ extra_output = ["storageLayout"]
 solc_version = "0.8.20"
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[etherscan]
+polygon = { key = "${6RFSWU6WMZ66V9Y2HAQAMQ67PH5D1P5AWA}" }

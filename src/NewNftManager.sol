@@ -14,8 +14,8 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
     uint256 private _nextTokenId;
     mapping(uint256 => uint8) public nftMintType;
 
-    string public basicNftImage;
-    string public proNftImage;
+    string public basicNftJson;
+    string public proNftJson;
 
     event CreateNFT(
         address indexed creator,
@@ -23,7 +23,7 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
         uint8 nftType
     );
 
-    event UpdatedNftImage(uint8 nftType, string newImageUrl);
+    event UpdatedNftJson(uint8 nftType, string newJsonUrl);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -36,8 +36,8 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
         __Ownable_init(_initialOwner);
         __ReentrancyGuard_init();
 
-        basicNftImage = "https://www.fishcake.io/_next/image?url=%2Ficons%2Ffishcake%2Fnft-basic-create.png&w=256&q=75";
-        proNftImage = "https://www.fishcake.io/_next/image?url=%2Ficons%2Ffishcake%2Fnft-pro-create.png&w=256&q=75";
+        basicNftJson = "https://www.fishcake.org/image/2.json";
+        proNftJson = "https://www.fishcake.org/image/1.json";
     }
 
     function createNFT(uint8 _type) external nonReentrant returns (uint256) {
@@ -56,36 +56,20 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
         require(_ownerOf(tokenId) != address(0), "ERC721Metadata: URI query for nonexistent token");
 
         uint8 nftType = nftMintType[tokenId];
-        string memory image = nftType == 1 ? basicNftImage : proNftImage;
-        string memory name = nftType == 1 ? "Fishcake Basic Pass" : "Fishcake Pro Pass";
-        string memory description = nftType == 1 ? "A Fishcake Basic Pass" : "A Fishcake Pro Pass";
-
-        string memory json = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "', name, '", ',
-                        '"description": "', description, '", ',
-                        '"image": "', image, '"}'
-                    )
-                )
-            )
-        );
-
-        return string(abi.encodePacked("data:application/json;base64,", json));
+        return nftType == 1 ? basicNftJson : proNftJson;
     }
 
     function supportsInterface(bytes4 interfaceId) public view override returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
-    function updateNftImage(uint8 _type, string memory _newImageUrl) external onlyOwner {
+    function updateNftJson(uint8 _type, string memory _newJsonUrl) external onlyOwner {
         require(_type == 1 || _type == 2, "Invalid NFT type");
         if (_type == 1) {
-            basicNftImage = _newImageUrl;
+            basicNftJson = _newJsonUrl;
         } else {
-            proNftImage = _newImageUrl;
+            proNftJson = _newJsonUrl;
         }
-        emit UpdatedNftImage(_type, _newImageUrl);
+        emit UpdatedNftJson(_type, _newJsonUrl);
     }
 }
