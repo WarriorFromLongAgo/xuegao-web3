@@ -31,13 +31,13 @@ contract DeployNewNftManager is Script {
         console.log("deploy nftManagerImpl:", address(nftManagerImpl));
         console.log("deploy proxyNftManager:", address(proxyNftManager));
 
-        NewNftManager(address(proxyNftManager)).createNFT(1);
-        NewNftManager(address(proxyNftManager)).createNFT(2);
-
-        string memory basicNftUri = NewNftManager(address(proxyNftManager)).tokenURI(0);
-        console.log("Basic NFT (TokenID: 0) URI:", basicNftUri);
-        string memory proNftUri = NewNftManager(address(proxyNftManager)).tokenURI(1);
-        console.log("Pro NFT (TokenID: 1) URI:", proNftUri);
+//        NewNftManager(address(proxyNftManager)).createNFT(1);
+//        NewNftManager(address(proxyNftManager)).createNFT(2);
+//
+//        string memory basicNftUri = NewNftManager(address(proxyNftManager)).tokenURI(0);
+//        console.log("Basic NFT (TokenID: 0) URI:", basicNftUri);
+//        string memory proNftUri = NewNftManager(address(proxyNftManager)).tokenURI(1);
+//        console.log("Pro NFT (TokenID: 1) URI:", proNftUri);
 
         vm.stopBroadcast();
     }
