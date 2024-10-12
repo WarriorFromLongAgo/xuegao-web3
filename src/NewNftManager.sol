@@ -36,8 +36,11 @@ contract NewNftManager is Initializable, ERC721Upgradeable, OwnableUpgradeable, 
         __Ownable_init(_initialOwner);
         __ReentrancyGuard_init();
 
-        basicNftImage = "https://www.fishcake.io/_next/image?url=%2Ficons%2Ffishcake%2Fnft-basic-create.png&w=256&q=75";
-        proNftImage = "https://www.fishcake.io/_next/image?url=%2Ficons%2Ffishcake%2Fnft-pro-create.png&w=256&q=75";
+//        basicNftImage = "https://www.fishcake.org/image/2.png";
+        basicNftImage = "https://bafkreih7efxihw6eiashsc5bvwwduo4vopqcvpw65hca5wedxvhnxfjgdu.ipfs.flk-ipfs.xyz/";
+
+//        proNftImage = "https://www.fishcake.org/image/1.png";
+        proNftImage = "https://bafkreig46imt7hpwupbatkpmli36y4fyfkfe4ywdymzdnhdot3rqzbazw4.ipfs.flk-ipfs.xyz/";
     }
 
     function createNFT(uint8 _type) external nonReentrant returns (uint256) {
